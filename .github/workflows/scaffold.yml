@@ -1,0 +1,29 @@
+name: Scaffold Flutter
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+      - name: Run flutter create
+        run: |
+          # Create in a temporary dir and copy over, to avoid conflicts
+          flutter create --platforms=android,ios,windows,macos --org app.daybefore --project-name daybefore temp_native
+          cp -r temp_native/* native/ || true
+          rm -rf temp_native
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add native/
+          git commit -m "chore: scaffold flutter via CI" || echo "No changes"
+          git push
