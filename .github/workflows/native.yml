@@ -66,11 +66,11 @@ jobs:
           flutter pub get
           flutter build windows --release --dart-define=SHOW_SUBSCRIBE_LINK=true
       - name: Zip release
-        run: Compress-Archive -Path native\build\windows\x64\runner\Release\* -DestinationPath DayBefore-windows.zip
+        run: iscc native\windows\installer.iss
       - uses: actions/upload-artifact@v4
         with:
           name: windows-zip
-          path: DayBefore-windows.zip
+          path: native/build/windows/installer/DayBefore-Setup.exe
 
   macos:
     runs-on: macos-latest
@@ -87,14 +87,16 @@ jobs:
         run: |
           flutter pub get
           flutter build macos --release --dart-define=SHOW_SUBSCRIBE_LINK=true
-      - name: Zip with ditto
+      - name: Build DMG
         run: |
+          npm install -g create-dmg
           cd native/build/macos/Build/Products/Release
-          ditto -c -k --sequesterRsrc --keepParent daybefore.app DayBefore-macos.zip
+          create-dmg daybefore.app || true
+          mv *.dmg DayBefore-macOS.dmg
       - uses: actions/upload-artifact@v4
         with:
           name: macos-zip
-          path: native/build/macos/Build/Products/Release/DayBefore-macos.zip
+          path: native/build/macos/Build/Products/Release/DayBefore-macOS.dmg
 
   ios:
     runs-on: macos-latest
@@ -134,8 +136,8 @@ jobs:
         run: |
           mkdir -p release
           [ -f artifacts/android-apk/app-release.apk ] && cp artifacts/android-apk/app-release.apk release/DayBefore-android.apk || true
-          [ -f artifacts/windows-zip/DayBefore-windows.zip ] && cp artifacts/windows-zip/DayBefore-windows.zip release/ || true
-          [ -f artifacts/macos-zip/DayBefore-macos.zip ] && cp artifacts/macos-zip/DayBefore-macos.zip release/ || true
+          [ -f artifacts/windows-zip/DayBefore-Setup.exe ] && cp artifacts/windows-zip/DayBefore-Setup.exe release/ || true
+          [ -f artifacts/macos-zip/DayBefore-macOS.dmg ] && cp artifacts/macos-zip/DayBefore-macOS.dmg release/ || true
           [ -f artifacts/ios-ipa/DayBefore-ios-unsigned.ipa ] && cp artifacts/ios-ipa/DayBefore-ios-unsigned.ipa release/ || true
           ls -la release/
       - name: Create GitHub Release
