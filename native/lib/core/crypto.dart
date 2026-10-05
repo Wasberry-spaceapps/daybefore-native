@@ -27,6 +27,48 @@ class DayBeforeCrypto {
       nonce: salt,
     );
   }
+  
+  static Future<SecretKey> generateDataKey() async {
+    return SecretKey(List<int>.generate(32, (i) => _rng.nextInt(256)));
+  }
+  
+  static String generateRecoveryKey() {
+    final bytes = List<int>.generate(16, (i) => _rng.nextInt(256));
+    final hexStr = bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    return hexStr.replaceAllMapped(RegExp(r'.{4}'), (match) => '-').replaceAll(RegExp(r'-$'), '');
+  }
+  
+  static Future<SecretKey> deriveRecoveryKey(String recoveryKeyStr) async {
+    final hexStr = recoveryKeyStr.replaceAll('-', '');
+    final bytes = List<int>.generate(hexStr.length ~/ 2, (i) => int.parse(hexStr.substring(i * 2, i * 2 + 2), radix: 16));
+    return SecretKey(bytes);
+  }
+  
+  static Future<String> wrapDataKey(SecretKey dataKey, SecretKey wrappingKey) async {
+    final aes = AesGcm.with256bits();
+    final plaintext = await dataKey.extractBytes();
+    final secretBox = await aes.encrypt(plaintext, secretKey: wrappingKey);
+    final nonce = secretBox.nonce;
+    final ct = secretBox.cipherText;
+    final mac = secretBox.mac.bytes;
+    final payload = Uint8List(12 + ct.length + 16);
+    payload.setAll(0, nonce);
+    payload.setAll(12, ct);
+    payload.setAll(12 + ct.length, mac);
+    return base64Encode(payload);
+  }
+  
+  static Future<SecretKey> unwrapDataKey(String base64Payload, SecretKey unwrappingKey) async {
+    final aes = AesGcm.with256bits();
+    final payload = base64Decode(base64Payload);
+    final nonce = payload.sublist(0, 12);
+    final cipherAndTag = payload.sublist(12);
+    final cipherText = cipherAndTag.sublist(0, cipherAndTag.length - 16);
+    final mac = Mac(cipherAndTag.sublist(cipherAndTag.length - 16));
+    final secretBox = SecretBox(cipherText, nonce: nonce, mac: mac);
+    final plainBytes = await aes.decrypt(secretBox, secretKey: unwrappingKey);
+    return SecretKey(plainBytes);
+  }
 
   static Future<String> encryptObject(Map<String, dynamic> obj, SecretKey key) async {
     final aes = AesGcm.with256bits();
