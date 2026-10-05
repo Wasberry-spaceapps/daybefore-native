@@ -1,0 +1,150 @@
+name: Build Native Apps
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['native-v*']
+    paths: ['native/**']
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+          cache: true
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Generate keystore if missing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "No keystore secret, generating a temporary one for this build..."
+            keytool -genkey -v -keystore release.keystore -alias daybefore -keyalg RSA -keysize 2048 -validity 10000 -storepass daybefore123 -keypass daybefore123 -dname "CN=Day Before, O=DayBefore, C=NG"
+          else
+            echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+          fi
+          mv release.keystore native/android/app/release.keystore
+      - name: Build APK
+        working-directory: native
+        env:
+          KEYSTORE_FILE: android/app/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'daybefore123' }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'daybefore' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'daybefore123' }}
+        run: |
+          flutter pub get
+          flutter test
+          flutter build apk --release --dart-define=SHOW_SUBSCRIBE_LINK=true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: native/build/app/outputs/flutter-apk/app-release.apk
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+          cache: true
+      - name: Build Windows
+        working-directory: native
+        run: |
+          flutter pub get
+          flutter build windows --release --dart-define=SHOW_SUBSCRIBE_LINK=true
+      - name: Zip release
+        run: Compress-Archive -Path native\build\windows\x64\runner\Release\* -DestinationPath DayBefore-windows.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-zip
+          path: DayBefore-windows.zip
+
+  macos:
+    runs-on: macos-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/native-v')
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+          cache: true
+      - name: Build macOS
+        working-directory: native
+        run: |
+          flutter pub get
+          flutter build macos --release --dart-define=SHOW_SUBSCRIBE_LINK=true
+      - name: Zip with ditto
+        run: |
+          cd native/build/macos/Build/Products/Release
+          ditto -c -k --sequesterRsrc --keepParent daybefore.app DayBefore-macos.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-zip
+          path: native/build/macos/Build/Products/Release/DayBefore-macos.zip
+
+  ios:
+    runs-on: macos-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/native-v')
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+          cache: true
+      - name: Build iOS (no codesign)
+        working-directory: native
+        run: |
+          flutter pub get
+          flutter build ios --release --no-codesign --dart-define=SHOW_SUBSCRIBE_LINK=false
+      - name: Package unsigned IPA
+        run: |
+          mkdir Payload
+          cp -r native/build/ios/iphoneos/Runner.app Payload/
+          zip -r DayBefore-ios-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: DayBefore-ios-unsigned.ipa
+
+  release:
+    needs: [android, windows, macos, ios]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Prepare release files
+        run: |
+          mkdir -p release
+          [ -f artifacts/android-apk/app-release.apk ] && cp artifacts/android-apk/app-release.apk release/DayBefore-android.apk || true
+          [ -f artifacts/windows-zip/DayBefore-windows.zip ] && cp artifacts/windows-zip/DayBefore-windows.zip release/ || true
+          [ -f artifacts/macos-zip/DayBefore-macos.zip ] && cp artifacts/macos-zip/DayBefore-macos.zip release/ || true
+          [ -f artifacts/ios-ipa/DayBefore-ios-unsigned.ipa ] && cp artifacts/ios-ipa/DayBefore-ios-unsigned.ipa release/ || true
+          ls -la release/
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name || 'native-v0.1.0' }}
+          name: "Day Before Native v0.1.0"
+          body: |
+            Native app builds for Day Before.
+            See [INSTALL.md](docs/INSTALL.md) for installation instructions.
+          files: release/*
+          fail_on_unmatched_files: false
