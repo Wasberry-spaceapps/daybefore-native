@@ -24,7 +24,8 @@ dependencies:
   file_selector: any
   share_plus: any
   lucide_icons_flutter: any
-  go_router: ^12.1.1
+  flutter_svg: ^2.0.10
+  go_router: ^14.0.0
 
 dev_dependencies:
   flutter_test:
@@ -37,19 +38,19 @@ flutter:
   fonts:
     - family: Gelasio
       fonts:
-        - asset: assets/fonts/Gelasio_400Regular.ttf
-        - asset: assets/fonts/Gelasio_400Regular_Italic.ttf
+        - asset: assets/fonts/Gelasio-Regular.ttf
+        - asset: assets/fonts/Gelasio-Italic.ttf
           style: italic
-        - asset: assets/fonts/Gelasio_500Medium.ttf
+        - asset: assets/fonts/Gelasio-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Gelasio_600SemiBold.ttf
+        - asset: assets/fonts/Gelasio-SemiBold.ttf
           weight: 600
     - family: Inter
       fonts:
-        - asset: assets/fonts/Inter_400Regular.ttf
-        - asset: assets/fonts/Inter_500Medium.ttf
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Inter_600SemiBold.ttf
+        - asset: assets/fonts/Inter-SemiBold.ttf
           weight: 600
 flutter_launcher_icons:
   android: "launcher_icon"
