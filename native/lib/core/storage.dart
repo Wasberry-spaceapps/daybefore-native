@@ -13,7 +13,8 @@ class LocalDb {
       databaseFactory = databaseFactoryFfi;
     }
     final dir = await getApplicationDocumentsDirectory();
-    _db = await openDatabase('${dir.path}/daybefore_data_$accountId.db', version: 1,
+    final dbPath = '${dir.path}/daybefore_data_$accountId.db';
+    _db = await openDatabase(dbPath, version: 1,
         onCreate: (db, v) async {
       await db.execute('''CREATE TABLE journal_entries (
         id TEXT PRIMARY KEY, content TEXT NOT NULL DEFAULT '',
@@ -29,6 +30,19 @@ class LocalDb {
         id TEXT PRIMARY KEY, issueId TEXT NOT NULL, content TEXT NOT NULL DEFAULT '',
         createdAt INTEGER, updatedAt INTEGER)''');
     });
+
+    if (!await verifyDatabaseIntegrity(_db)) {
+      await _db.close();
+      final corruptPath = '${dir.path}/daybefore_data_${accountId}_corrupt_${DateTime.now().millisecondsSinceEpoch}.db';
+      await File(dbPath).rename(corruptPath);
+      throw Exception('DATABASE_CORRUPT');
+    }
+  }
+
+  Future<bool> verifyDatabaseIntegrity(Database db) async {
+    final result = await db.rawQuery('PRAGMA integrity_check');
+    final status = result.first.values.first as String;
+    return status == 'ok';
   }
 
   Future<List<Map<String, dynamic>>> getAll(String table, {String orderBy = 'createdAt DESC'}) async =>
