@@ -7,13 +7,13 @@ import 'package:path_provider/path_provider.dart';
 class LocalDb {
   late Database _db;
 
-  Future<void> init() async {
+  Future<void> init(String accountId) async {
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
     }
     final dir = await getApplicationDocumentsDirectory();
-    _db = await openDatabase('${dir.path}/daybefore.db', version: 1,
+    _db = await openDatabase('${dir.path}/daybefore_data_$accountId.db', version: 1,
         onCreate: (db, v) async {
       await db.execute('''CREATE TABLE journal_entries (
         id TEXT PRIMARY KEY, content TEXT NOT NULL DEFAULT '',
