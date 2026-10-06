@@ -12,18 +12,51 @@ dependencies:
   cryptography: ^2.7.0
   sqflite: ^2.3.3
   sqflite_common_ffi: ^2.3.3
-  path_provider: ^2.1.3
+  path_provider: ^2.1.4
   flutter_secure_storage: ^9.2.2
   http: ^1.2.1
   uuid: ^4.4.2
   url_launcher: ^6.3.0
   shared_preferences: ^2.2.3
   provider: ^6.1.2
+  archive: any
+  pdf: any
+  file_selector: any
+  share_plus: any
+  lucide_icons_flutter: any
+  go_router: ^12.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: any
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Gelasio
+      fonts:
+        - asset: assets/fonts/Gelasio_400Regular.ttf
+        - asset: assets/fonts/Gelasio_400Regular_Italic.ttf
+          style: italic
+        - asset: assets/fonts/Gelasio_500Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Gelasio_600SemiBold.ttf
+          weight: 600
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter_400Regular.ttf
+        - asset: assets/fonts/Inter_500Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter_600SemiBold.ttf
+          weight: 600
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#17120D"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  windows: { generate: true, image_path: "assets/icon/icon.png", icon_size: 256 }
+  macos: { generate: true, image_path: "assets/icon/icon.png" }

@@ -143,8 +143,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name || 'native-v0.1.0' }}
-          name: "Day Before Native v0.1.0"
+          tag_name: ${{ github.ref_name || 'native-v0.2.0' }}
+          name: "Day Before Native ${{ github.ref_name || 'v0.2.0' }}"
           body: |
             Native app builds for Day Before.
             See [INSTALL.md](docs/INSTALL.md) for installation instructions.

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
+import 'package:go_router/go_router.dart';
 import '../core/storage.dart';
 import '../core/api.dart';
 import '../core/sync.dart';
@@ -11,6 +12,7 @@ import '../models/journal_entry.dart';
 import '../models/core_point.dart';
 import '../models/issue.dart';
 import '../features/auth/auth_provider.dart';
+import '../features/export/export_service.dart';
 import 'theme.dart';
 
 class AppState extends ChangeNotifier {
@@ -120,16 +122,29 @@ class AppState extends ChangeNotifier {
 }
 
 class AppShell extends StatelessWidget {
+  final Widget child;
+  const AppShell({Key? key, required this.child}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth > 768) {
+      if (constraints.maxWidth >= 900) {
         return Scaffold(
           body: Row(
             children: [
               SizedBox(width: 320, child: Sidebar()),
               const VerticalDivider(width: 1),
-              Expanded(child: EditorArea()),
+              Expanded(child: child),
+            ],
+          ),
+        );
+      } else if (constraints.maxWidth >= 600) {
+        return Scaffold(
+          body: Row(
+            children: [
+              SizedBox(width: 240, child: Sidebar()),
+              const VerticalDivider(width: 1),
+              Expanded(child: child),
             ],
           ),
         );
@@ -139,7 +154,7 @@ class AppShell extends StatelessWidget {
             title: const Text('Day Before'),
           ),
           drawer: Drawer(child: Sidebar()),
-          body: EditorArea(),
+          body: child,
         );
       }
     });
@@ -271,6 +286,18 @@ class _SidebarState extends State<Sidebar> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                TextButton(
+                  onPressed: () => context.go('/minute'),
+                  child: const Text('Take a minute'),
+                ),
+                TextButton(
+                  onPressed: () => ExportService.exportToPdf(state.journals, state.corePoints, state.issues),
+                  child: const Text('Export to PDF'),
+                ),
+                TextButton(
+                  onPressed: () => ExportService.exportToZip(state.journals, state.corePoints, state.issues),
+                  child: const Text('Export to ZIP'),
+                ),
                 if (const bool.fromEnvironment('SHOW_SUBSCRIBE_LINK', defaultValue: true))
                   TextButton(
                     onPressed: () => launchUrl(Uri.parse('https://daybefore.app/#pricing')),
@@ -280,8 +307,9 @@ class _SidebarState extends State<Sidebar> {
                   onPressed: () {
                     if (auth.isLoggedIn) {
                       auth.logout();
+                      context.go('/auth');
                     } else {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const AuthScreen()));
+                      context.go('/auth');
                     }
                   },
                   child: Text(auth.isLoggedIn ? 'Log Out' : 'Sign In / Sync'),
@@ -392,11 +420,11 @@ class _AuthScreenState extends State<AuthScreen> {
                     } else {
                       await auth.register(emailCtrl.text.trim(), passCtrl.text);
                     }
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => AppShell()));
+                    if (mounted) context.go('/');
                   } catch (e) {
                     setState(() => error = e.toString());
                   } finally {
-                    setState(() => loading = false);
+                    if (mounted) setState(() => loading = false);
                   }
                 },
                 child: Text(isLogin ? 'Log In' : 'Register'),
@@ -406,7 +434,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Text(isLogin ? "Don't have an account? Register" : "Already have an account? Log In"),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => AppShell())),
+                onPressed: () => context.go('/'),
                 child: const Text("Skip & Use Offline"),
               )
             ],

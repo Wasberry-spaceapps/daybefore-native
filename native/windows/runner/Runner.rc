@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "app.daybefore" "\0"
-            VALUE "FileDescription", "daybefore" "\0"
+            VALUE "FileDescription", "Day Before" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "daybefore" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 app.daybefore. All rights reserved." "\0"
             VALUE "OriginalFilename", "daybefore.exe" "\0"
-            VALUE "ProductName", "daybefore" "\0"
+            VALUE "ProductName", "Day Before" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

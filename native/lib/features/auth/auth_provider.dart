@@ -58,4 +58,16 @@ class AuthProvider extends ChangeNotifier {
     await const FlutterSecureStorage().deleteAll();
     notifyListeners();
   }
+
+  Future<bool> verifyPassword(String password) async {
+    if (encryptionKey == null) return false;
+    final storage = const FlutterSecureStorage();
+    final saltB64 = await storage.read(key: 'salt');
+    if (saltB64 == null) return false;
+    final testKey = await DayBeforeCrypto.deriveKey(
+        password, DayBeforeCrypto.saltFromBase64(saltB64));
+    final currentBytes = await encryptionKey!.extractBytes();
+    final testBytes = await testKey.extractBytes();
+    return listEquals(currentBytes, testBytes);
+  }
 }
