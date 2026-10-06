@@ -61,7 +61,13 @@ export default function Landing() {
           </p>
         </section>
 
-
+        {Object.keys(import.meta.glob('/public/media/introducing.mp4', { eager: true })).length > 0 && (
+          <section style={{ margin: '80px 0', aspectRatio: '16/9', background: 'var(--hairline)', borderRadius: '8px', overflow: 'hidden' }}>
+            <video controls preload="metadata" playsInline poster="/media/introducing-poster.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+              <source src="/media/introducing.mp4" type="video/mp4" />
+            </video>
+          </section>
+        )}
 
         {/* Two Things In One Place */}
         <section style={{ margin: '120px 0' }}>

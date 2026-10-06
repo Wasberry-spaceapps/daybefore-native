@@ -392,7 +392,11 @@ export default function App() {
             </>
           ) : (
             <div className="empty-state">
-              <p>Select an entry from the sidebar, or create a new one.</p>
+              <p>
+                {activeView.type === 'journal' ? 'Nothing here yet. Write the day, or only a line of it, whichever you have.' : 
+                 activeView.type === 'issue' ? 'Name something you keep getting wrong.' :
+                 activeView.type === 'core' ? 'What are the few standards you would like to be held to?' : ''}
+              </p>
               {activeView.type === 'journal' && (
                 <button onClick={handleNewJournal} className="text-btn" style={{ marginTop: '16px', color: 'var(--accent)', fontSize: '1.2rem' }}>
                   + Create New Entry

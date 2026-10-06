@@ -113,6 +113,15 @@ function AppWrapper() {
          setLocked(false);
          return; // Local only without lock
       }
+      let saltArr = new Uint8Array(16);
+      if (salt.includes(',')) {
+        saltArr = new Uint8Array(salt.split(',').map(Number));
+      } else {
+        const saltBin = atob(salt);
+        saltArr = new Uint8Array(saltBin.length);
+        for(let i=0; i<saltBin.length; i++) saltArr[i] = saltBin.charCodeAt(i);
+      }
+
       const enc = new TextEncoder();
       const keyMaterial = await crypto.subtle.importKey(
         'raw', enc.encode(lockPass), { name: 'PBKDF2' }, false, ['deriveKey']
@@ -120,7 +129,7 @@ function AppWrapper() {
       const key = await crypto.subtle.deriveKey(
         {
           name: 'PBKDF2',
-          salt: new Uint8Array(salt.split(',').map(Number)),
+          salt: saltArr,
           iterations: 100000,
           hash: 'SHA-256'
         },
