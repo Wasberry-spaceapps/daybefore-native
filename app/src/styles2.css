@@ -1,0 +1,25 @@
+.list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+}
+.list-item {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 2px 0;
+}
+.list-item:hover {
+  color: var(--text-primary);
+}
+.list-item.active {
+  color: var(--text-primary);
+}
+.create-inline input {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  width: 100%;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--accent);
+}

@@ -1,0 +1,29 @@
+name = "daybefore-backend"
+main = "src/index.ts"
+compatibility_date = "2024-02-27"
+compatibility_flags = [ "nodejs_compat" ]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "daybefore_db"
+database_id = "d76cb8d0-522a-4970-afd7-5ae4e3529c2a" # Placeholder
+
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "daybefore-verifications"
+
+[vars]
+JWT_SECRET = "dev_secret_key_change_in_production"
+LEMON_SQUEEZY_WEBHOOK_SECRET = "dev_lemon_secret"
+
+[env.staging]
+name = "daybefore-backend-staging"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "daybefore_db_staging"
+database_id = "placeholder-staging"
+
+[[env.staging.r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "daybefore-verifications-staging"
