@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none"
+     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- half-disc sunrise — gold fill -->
+  <path d="M35 58a25 25 0 0 1 50 0" fill="#D4A25A" stroke="none"/>
+  <!-- horizon line -->
+  <path d="M15 58h90"/>
+  <!-- three short text lines below the horizon -->
+  <path d="M38 72h44"/>
+  <path d="M42 82h36"/>
+  <path d="M48 92h24"/>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- spine -->
+  <path d="M12 4v16"/>
+  <!-- left cover, slight fan -->
+  <path d="M12 4C10.5 4 5 3.5 3 5v14c2 -1.2 7.5 -0.8 9 0"/>
+  <!-- right cover -->
+  <path d="M12 4c1.5 0 7 -0.5 9 1.5v14c-2 -1.2 -7.5 -0.8 -9 0"/>
+  <!-- left page line -->
+  <path d="M7.5 8.5c1.5 -0.3 3 -0.2 4.5 0"/>
+  <!-- left page line lower -->
+  <path d="M7.5 12c1.5 -0.3 3 -0.2 4.5 0"/>
+</svg>

@@ -1,7 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <g transform="translate(204.8, 204.8) scale(0.6)">
-    <path d="M312 572A200 200 0 0 1 712 572Z" fill="#D4A25A"/>
-    <rect x="232" y="572" width="560" height="28" rx="14" fill="#F2EEE6"/>
-    <rect x="332" y="636" width="360" height="16" rx="8" fill="#6E6960"/>
-  </g>
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- all shapes shifted to centre and scaled to ~60% of canvas -->
+  <path d="M367 572A145 145 0 0 1 657 572Z" fill="#D4A25A"/>
+  <rect x="307" y="572" width="410" height="20" rx="10" fill="#F2EEE6"/>
+  <rect x="380" y="620" width="264" height="12" rx="6" fill="#6E6960"/>
 </svg>

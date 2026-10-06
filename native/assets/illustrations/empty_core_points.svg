@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none"
+     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- compass body circle -->
+  <circle cx="60" cy="60" r="38"/>
+  <!-- tick marks N E S W -->
+  <path d="M60 22v8"/>
+  <path d="M60 90v8"/>
+  <path d="M22 60h8"/>
+  <path d="M90 60h8"/>
+  <!-- needle pointing north — top half gold -->
+  <path d="M60 32l4 28h-8z" fill="#D4A25A" stroke="none"/>
+  <!-- needle bottom half -->
+  <path d="M60 88l4 -28h-8z" fill="none" stroke="currentColor"/>
+  <!-- centre pin -->
+  <circle cx="60" cy="60" r="2.5"/>
+</svg>

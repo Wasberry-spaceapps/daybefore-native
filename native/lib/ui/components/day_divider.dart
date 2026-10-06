@@ -1,13 +1,24 @@
 import 'package:flutter/widgets.dart';
 import '../theme_provider.dart';
-import '../tokens.dart';
 
 class DayDivider extends StatelessWidget {
-  const DayDivider({super.key});
+  final double horizontalMargin;
+  
+  const DayDivider({
+    super.key,
+    this.horizontalMargin = 0.0,
+  });
 
   @override
   Widget build(BuildContext context) {
     final palette = PaletteProvider.of(context);
-    return Container();
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalMargin),
+      child: SizedBox(
+        height: 1,
+        width: double.infinity,
+        child: ColoredBox(color: palette.hairline),
+      ),
+    );
   }
 }
