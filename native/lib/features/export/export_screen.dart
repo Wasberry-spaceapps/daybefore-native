@@ -5,6 +5,8 @@ import '../../ui/tokens.dart';
 import '../../ui/components/day_button.dart';
 import '../../ui/components/day_status_pill.dart';
 import '../../ui/components/day_icon_button.dart';
+import '../../ui/components/day_toast.dart';
+import 'export_service.dart';
 
 class ExportScreen extends StatefulWidget {
   const ExportScreen({super.key});
@@ -15,6 +17,26 @@ class ExportScreen extends StatefulWidget {
 
 class _ExportScreenState extends State<ExportScreen> {
   int _format = 0; // 0=markdown, 1=pdf, 2=json
+  bool _isExporting = false;
+
+  Future<void> _handleExport() async {
+    setState(() => _isExporting = true);
+    try {
+      await ExportService.performExport(
+        format: _format,
+        includeJournal: true,
+        includeIssues: true,
+        includeCorePoints: true,
+        onResult: (msg) {
+          if (mounted) DayToast.show(context, msg);
+        },
+      );
+    } catch (e) {
+      if (mounted) DayToast.show(context, 'Export failed');
+    } finally {
+      if (mounted) setState(() => _isExporting = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +88,9 @@ class _ExportScreenState extends State<ExportScreen> {
                     description: 'A complete backup, including every revision of every issue.',
                   ),
                   const SizedBox(height: 24),
-                  DayButton(
-                    label: 'Export',
-                    variant: DayButtonVariant.primary,
-                    fullWidth: true,
-                    onTap: () {},
+                  DayButton.primary(
+                    label: _isExporting ? 'Exporting...' : 'Export',
+                    onTap: _isExporting ? null : _handleExport,
                   ),
                 ],
               ),

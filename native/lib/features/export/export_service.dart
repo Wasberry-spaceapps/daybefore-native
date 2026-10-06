@@ -1,77 +1,86 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:file_selector/file_selector.dart';
-import 'package:archive/archive.dart';
-import 'package:pdf/widgets.dart' as pw;
-import '../../models/journal_entry.dart';
-import '../../models/core_point.dart';
-import '../../models/issue.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import '../../core/storage.dart';
+import 'markdown_export.dart';
+import 'pdf_export.dart';
+import 'json_export.dart';
 
 class ExportService {
-  static Future<void> exportToZip(List<JournalEntry> journals, List<CorePoint> corePoints, List<Issue> issues) async {
-    final location = await getSaveLocation(suggestedName: 'daybefore_export.zip');
-    if (location == null) return;
+  static Future<void> performExport({
+    required int format, // 0=markdown, 1=pdf, 2=json
+    required bool includeJournal,
+    required bool includeIssues,
+    required bool includeCorePoints,
+    required void Function(String) onResult,
+  }) async {
+    final entries = await Storage.getEntries();
+    final issues = await Storage.getIssues();
+    final corePoints = await Storage.getCorePoints();
 
-    final archive = Archive();
+    Uint8List bytes;
+    String extension;
+    String suggestedName;
+    String mimeType;
 
-    for (var j in journals) {
-      final d = DateTime.fromMillisecondsSinceEpoch(j.createdAt);
-      final name = 'journals/${d.year}-${d.month}-${d.day}_${d.hour}${d.minute}.md';
-      archive.addFile(ArchiveFile(name, j.content.length, j.content.codeUnits));
-    }
-    
-    for (var c in corePoints) {
-      archive.addFile(ArchiveFile('core/${c.name}.md', c.content.length, c.content.codeUnits));
-    }
-    
-    for (var i in issues) {
-      archive.addFile(ArchiveFile('issues/${i.name}.md', i.content.length, i.content.codeUnits));
+    if (format == 0) {
+      bytes = MarkdownExport.generateZip(
+        entries: entries,
+        issues: issues,
+        corePoints: corePoints,
+        includeJournal: includeJournal,
+        includeIssues: includeIssues,
+        includeCorePoints: includeCorePoints,
+      );
+      extension = 'zip';
+      suggestedName = 'DayBefore-export.zip';
+      mimeType = 'application/zip';
+    } else if (format == 1) {
+      bytes = await PdfExport.generate(
+        entries: entries,
+        issues: issues,
+        corePoints: corePoints,
+        includeJournal: includeJournal,
+        includeIssues: includeIssues,
+        includeCorePoints: includeCorePoints,
+      );
+      extension = 'pdf';
+      suggestedName = 'DayBefore-export.pdf';
+      mimeType = 'application/pdf';
+    } else {
+      bytes = JsonExport.generate(
+        entries: entries,
+        issues: issues,
+        corePoints: corePoints,
+        includeJournal: includeJournal,
+        includeIssues: includeIssues,
+        includeCorePoints: includeCorePoints,
+      );
+      extension = 'json';
+      suggestedName = 'DayBefore-export.json';
+      mimeType = 'application/json';
     }
 
-    final bytes = ZipEncoder().encode(archive);
-    if (bytes != null) {
-      final file = File(location.path);
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      final location = await getSaveLocation(
+        suggestedName: suggestedName,
+        acceptedTypeGroups: [
+          XTypeGroup(label: 'Export File', extensions: [extension]),
+        ],
+      );
+      if (location != null) {
+        final file = XFile.fromData(bytes, name: location.path, mimeType: mimeType);
+        await file.saveTo(location.path);
+        onResult('Saved to ${location.path}');
+      }
+    } else {
+      final dir = await getTemporaryDirectory();
+      final file = File('\${dir.path}/\$suggestedName');
       await file.writeAsBytes(bytes);
+      await Share.shareXFiles([XFile(file.path)]);
+      onResult('Shared');
     }
-  }
-
-  static Future<void> exportToPdf(List<JournalEntry> journals, List<CorePoint> corePoints, List<Issue> issues) async {
-    final location = await getSaveLocation(suggestedName: 'daybefore_export.pdf');
-    if (location == null) return;
-
-    final pdf = pw.Document();
-
-    pdf.addPage(
-      pw.MultiPage(
-        build: (context) {
-          final widgets = <pw.Widget>[];
-          
-          widgets.add(pw.Header(level: 0, child: pw.Text('Day Before Export')));
-          
-          widgets.add(pw.Header(level: 1, child: pw.Text('Core Points')));
-          for (var c in corePoints) {
-            widgets.add(pw.Header(level: 2, child: pw.Text(c.name)));
-            widgets.add(pw.Paragraph(text: c.content));
-          }
-
-          widgets.add(pw.Header(level: 1, child: pw.Text('Issues')));
-          for (var i in issues) {
-            widgets.add(pw.Header(level: 2, child: pw.Text(i.name)));
-            widgets.add(pw.Paragraph(text: i.content));
-          }
-          
-          widgets.add(pw.Header(level: 1, child: pw.Text('Journals')));
-          for (var j in journals) {
-            final d = DateTime.fromMillisecondsSinceEpoch(j.createdAt);
-            widgets.add(pw.Header(level: 2, child: pw.Text('${d.year}-${d.month}-${d.day} ${d.hour}:${d.minute}')));
-            widgets.add(pw.Paragraph(text: j.content));
-          }
-
-          return widgets;
-        },
-      ),
-    );
-
-    final file = File(location.path);
-    await file.writeAsBytes(await pdf.save());
   }
 }
