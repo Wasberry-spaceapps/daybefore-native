@@ -25,9 +25,60 @@ class CorePointScreen extends StatelessWidget {
           const SizedBox(height: 24),
         ],
         Expanded(
-          child: DayEmptyState(
-            illustration: DayIllustrationName.emptyCorePoints,
-            text: 'What are the few standards you would like to be held to?',
+          child: SingleChildScrollView(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 680),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isPhone(context) ? 20.0 : 32.0,
+                  ).copyWith(
+                    top: isPhone(context) ? 20.0 : 56.0,
+                    bottom: 120,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              style: Ty.titleLg(palette.text),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Name this core point',
+                                hintStyle: Ty.titleLg(palette.faint),
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              cursorColor: palette.accent,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Text('🗑️', style: TextStyle(fontSize: 20)),
+                            onPressed: () {
+                              // TODO: Implement actual delete
+                            },
+                            tooltip: 'Delete Core Point',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        maxLines: null,
+                        style: Ty.writing(palette.text, phone: isPhone(context)),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'What are the few standards you would like to be held to?',
+                          hintStyle: Ty.writing(palette.faint, phone: isPhone(context)),
+                        ),
+                        cursorColor: palette.accent,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ],

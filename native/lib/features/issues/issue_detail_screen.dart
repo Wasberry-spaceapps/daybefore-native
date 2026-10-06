@@ -48,17 +48,31 @@ class _IssueDetailScreenState extends State<IssueDetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  controller: _nameController,
-                  style: Ty.titleLg(palette.text),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Name this issue',
-                    hintStyle: Ty.titleLg(palette.faint),
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  cursorColor: palette.accent,
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _nameController,
+                        style: Ty.titleLg(palette.text),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Name this issue',
+                          hintStyle: Ty.titleLg(palette.faint),
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        cursorColor: palette.accent,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Text('🗑️', style: TextStyle(fontSize: 20)),
+                      onPressed: () {
+                        // TODO: Implement actual delete logic via Storage
+                        context.go('/');
+                      },
+                      tooltip: 'Delete Issue',
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 32),
                 Text("Tabs here: Theory, Returns, Read it back", style: Ty.body(palette.muted)),
