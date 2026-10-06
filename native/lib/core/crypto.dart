@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
+import 'dart:isolate';
 import 'package:cryptography/cryptography.dart';
 
 class DayBeforeCrypto {
@@ -17,15 +18,17 @@ class DayBeforeCrypto {
       Uint8List.fromList(List.generate(16, (_) => _rng.nextInt(256)));
 
   static Future<SecretKey> deriveKey(String passphrase, Uint8List salt) async {
-    final pbkdf2 = Pbkdf2(
-      macAlgorithm: Hmac.sha256(),
-      iterations: 100000,
-      bits: 256,
-    );
-    return pbkdf2.deriveKey(
-      secretKey: SecretKey(utf8.encode(passphrase)),
-      nonce: salt,
-    );
+    return await Isolate.run(() async {
+      final pbkdf2 = Pbkdf2(
+        macAlgorithm: Hmac.sha256(),
+        iterations: 100000,
+        bits: 256,
+      );
+      return pbkdf2.deriveKey(
+        secretKey: SecretKey(utf8.encode(passphrase)),
+        nonce: salt,
+      );
+    });
   }
   
   static Future<SecretKey> generateDataKey() async {
