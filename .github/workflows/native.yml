@@ -65,12 +65,15 @@ jobs:
         run: |
           flutter pub get
           flutter build windows --release --dart-define=SHOW_SUBSCRIBE_LINK=true
-      - name: Zip release
-        run: iscc native\windows\installer.iss
+      - name: Zip portable build
+        shell: pwsh
+        run: |
+          $src = "native\build\windows\x64\runner\Release"
+          Compress-Archive -Path "$src\*" -DestinationPath "DayBefore-Windows-portable.zip"
       - uses: actions/upload-artifact@v4
         with:
           name: windows-zip
-          path: native/build/windows/installer/DayBefore-Setup.exe
+          path: DayBefore-Windows-portable.zip
 
   macos:
     runs-on: macos-latest
@@ -136,7 +139,7 @@ jobs:
         run: |
           mkdir -p release
           [ -f artifacts/android-apk/app-release.apk ] && cp artifacts/android-apk/app-release.apk release/DayBefore-android.apk || true
-          [ -f artifacts/windows-zip/DayBefore-Setup.exe ] && cp artifacts/windows-zip/DayBefore-Setup.exe release/ || true
+          [ -f artifacts/windows-zip/DayBefore-Windows-portable.zip ] && cp artifacts/windows-zip/DayBefore-Windows-portable.zip release/ || true
           [ -f artifacts/macos-zip/DayBefore-macOS.dmg ] && cp artifacts/macos-zip/DayBefore-macOS.dmg release/ || true
           [ -f artifacts/ios-ipa/DayBefore-ios-unsigned.ipa ] && cp artifacts/ios-ipa/DayBefore-ios-unsigned.ipa release/ || true
           ls -la release/

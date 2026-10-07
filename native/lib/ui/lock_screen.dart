@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../features/auth/auth_provider.dart';
 import 'theme_provider.dart';
 import 'tokens.dart';
 import 'components/day_button.dart';
@@ -8,7 +10,8 @@ import 'illustrations/day_illustrations.dart';
 import 'components/day_form_error.dart';
 
 class LockScreen extends StatefulWidget {
-  const LockScreen({super.key});
+  final String? redirect;
+  const LockScreen({super.key, this.redirect});
 
   @override
   State<LockScreen> createState() => _LockScreenState();
@@ -29,19 +32,58 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
   ]).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeInOut));
 
   Future<void> _unlock() async {
+    if (_controller.text.trim().isEmpty) return;
     setState(() { _unlocking = true; _error = null; });
     try {
-      // Mock unlock
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (_controller.text == 'password') {
-        if (mounted) context.go('/');
-      } else {
-        setState(() => _error = 'That password did not match.');
-        _shakeController.forward(from: 0);
+      final auth = context.read<AuthProvider>();
+      await auth.unlock(_controller.text);
+      if (mounted) {
+        final dest = widget.redirect ?? '/';
+        context.go(dest);
       }
+    } catch (_) {
+      setState(() => _error = 'That password did not match.');
+      _shakeController.forward(from: 0);
     } finally {
       if (mounted) setState(() => _unlocking = false);
     }
+  }
+
+  void _signOut() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Sign out?'),
+        content: const Text('Your entries remain on this device. You can sign back in any time.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Sign out')),
+        ],
+      ),
+    );
+    if (confirm == true && mounted) {
+      await context.read<AuthProvider>().logout();
+      context.go('/');
+    }
+  }
+
+  void _forgotPassword() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Forgot your password?'),
+        content: const Text(
+          'Day Before uses end-to-end encryption — your password never leaves your device, '
+          'so we cannot send a reset email.\n\n'
+          'If you have your recovery key, password reset is coming soon.\n\n'
+          'Without your recovery key, your encrypted entries cannot be recovered. '
+          'You can sign out and start fresh.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+        ],
+      ),
+    );
   }
 
   @override
@@ -108,12 +150,12 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: _forgotPassword,
                           child: Text('Forgot password?', style: Ty.body(palette.muted)),
                         ),
                         const SizedBox(width: 24),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: _signOut,
                           child: Text('Sign out', style: Ty.body(palette.muted)),
                         ),
                       ],

@@ -389,10 +389,66 @@ class _AuthScreenState extends State<AuthScreen> {
   final passCtrl = TextEditingController();
   String error = '';
   bool loading = false;
+  String? recoveryKey;
+  bool isMigration = false;
 
   @override
   Widget build(BuildContext context) {
     final auth = context.read<AuthProvider>();
+
+    if (recoveryKey != null) {
+      return Scaffold(
+        body: Center(
+          child: Container(
+            width: 400,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  isMigration ? 'Account Upgraded' : 'Save Your Recovery Key',
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  isMigration
+                    ? 'Your account has been upgraded to stronger encryption. '
+                      'This key is the ONLY way to recover your journal if you forget your password. '
+                      'This screen appears once — save it now.'
+                    : 'This is the ONLY way to recover your journal if you forget your password. '
+                      'We cannot reset it for you. Write it down or save it somewhere safe.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SelectableText(
+                    recoveryKey!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontFamily: 'monospace', fontSize: 16, letterSpacing: 2),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() => recoveryKey = null);
+                    context.go('/');
+                  },
+                  child: const Text('I have saved it'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       body: Center(
@@ -416,11 +472,18 @@ class _AuthScreenState extends State<AuthScreen> {
                   setState(() { loading = true; error = ''; });
                   try {
                     if (isLogin) {
-                      await auth.login(emailCtrl.text.trim(), passCtrl.text);
+                      final migrationKey = await auth.login(emailCtrl.text.trim(), passCtrl.text);
+                      if (mounted) {
+                        if (migrationKey != null) {
+                          setState(() { recoveryKey = migrationKey; isMigration = true; });
+                        } else {
+                          context.go('/');
+                        }
+                      }
                     } else {
-                      await auth.register(emailCtrl.text.trim(), passCtrl.text);
+                      final regKey = await auth.register(emailCtrl.text.trim(), passCtrl.text);
+                      if (mounted) setState(() { recoveryKey = regKey; isMigration = false; });
                     }
-                    if (mounted) context.go('/');
                   } catch (e) {
                     setState(() => error = e.toString());
                   } finally {

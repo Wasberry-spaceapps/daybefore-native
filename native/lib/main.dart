@@ -56,7 +56,7 @@ class _DayBeforeAppState extends State<DayBeforeApp> with WidgetsBindingObserver
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    
+
     _backupManager = BackupManager(
       accountId: widget.accountId,
       exportEncrypted: () async {
@@ -64,6 +64,15 @@ class _DayBeforeAppState extends State<DayBeforeApp> with WidgetsBindingObserver
       }
     );
     _backupManager.start();
+
+    // Restore session token on cold start (key will be set after lock-screen unlock)
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final auth = context.read<AuthProvider>();
+      await auth.tryRestoreSession();
+      if (mounted && auth.isLoggedIn) {
+        _router.go('/lock');
+      }
+    });
 
     _router = GoRouter(
       navigatorKey: _routerKey,
@@ -109,8 +118,11 @@ class _DayBeforeAppState extends State<DayBeforeApp> with WidgetsBindingObserver
       _backupManager.writeBackup();
     }
     if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      final auth = context.read<AuthProvider>();
+      if (!auth.isLoggedIn) return; // don't lock if not signed in
       final currentRoute = _router.routerDelegate.currentConfiguration.uri.toString();
       if (!currentRoute.startsWith('/lock') && !currentRoute.startsWith('/auth')) {
+        auth.encryptionKey = null; // wipe in-memory key
         _router.go('/lock?redirect=${Uri.encodeComponent(currentRoute)}');
       }
     }

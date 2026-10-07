@@ -63,10 +63,22 @@ class ApiClient {
     }
   }
 
-  Future<Map<String, dynamic>> register(String email, String pwHash, String saltB64) async {
-    final res = await _post('/auth/register', {'email': email, 'passwordHash': pwHash, 'salt': saltB64});
+  Future<Map<String, dynamic>> register(String email, String pwHash, String saltB64,
+      {String? wrappedKeyPwd, String? wrappedKeyRecovery}) async {
+    final body = <String, dynamic>{'email': email, 'passwordHash': pwHash, 'salt': saltB64};
+    if (wrappedKeyPwd != null) body['wrappedKeyPwd'] = wrappedKeyPwd;
+    if (wrappedKeyRecovery != null) body['wrappedKeyRecovery'] = wrappedKeyRecovery;
+    final res = await _post('/auth/register', body);
     if (res.statusCode != 200) throw ApiException(res.body);
     return jsonDecode(res.body);
+  }
+
+  Future<void> migrateV2(String wrappedKeyPwd, String wrappedKeyRecovery) async {
+    final res = await _post('/auth/migrate-v2', {
+      'wrappedKeyPwd': wrappedKeyPwd,
+      'wrappedKeyRecovery': wrappedKeyRecovery,
+    });
+    if (res.statusCode != 200) throw ApiException(res.body);
   }
 
   Future<Map<String, dynamic>> login(String email, String pwHash) async {
