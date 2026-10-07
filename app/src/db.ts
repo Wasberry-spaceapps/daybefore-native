@@ -32,7 +32,10 @@ interface IssueEntry {
   updatedAt: number;
 }
 
-const db = new Dexie('DayBeforeDB') as Dexie & {
+const storedEmail = localStorage.getItem('daybefore_email');
+const dbName = storedEmail ? `DayBeforeDB-${storedEmail}` : 'DayBeforeDB';
+
+const db = new Dexie(dbName) as Dexie & {
   journalEntries: EntityTable<JournalEntry, 'id'>;
   corePoints: EntityTable<CorePoint, 'id'>;
   issues: EntityTable<Issue, 'id'>;

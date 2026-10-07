@@ -4,6 +4,11 @@ import { db } from './db';
 import Game from './Game';
 import ExportModal from './ExportModal';
 import { syncDatabase } from './sync';
+import {
+  markBackupDirty, startBackupScheduler, setupBackupFolder,
+  exportAllAccountData, encryptBackup, mirrorToOPFS, requestPersistentStorage
+} from './redundancy';
+import { getBackupHandle } from './registry';
 import './index.css';
 
 function generateId() {
@@ -54,6 +59,7 @@ export default function App() {
   const [activeView, setActiveView] = useState<ViewContext>({ type: 'journal', id: null });
   const [showGame, setShowGame] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const [showBackupPrompt, setShowBackupPrompt] = useState(false);
 
   // Editor states
   const [draftContent, setDraftContent] = useState('');
@@ -95,6 +101,27 @@ export default function App() {
       return;
     }
     runSync();
+
+    // Request persistent storage so the browser won't evict our IndexedDB
+    requestPersistentStorage();
+
+    // Start the backup scheduler
+    const accountId = localStorage.getItem('daybefore_email') ?? 'local';
+    const e2eKey = (window as any).e2eKey as CryptoKey | undefined;
+    if (e2eKey) {
+      const exportFn = async () => {
+        const allData = await exportAllAccountData(db);
+        return encryptBackup(allData, e2eKey, accountId);
+      };
+      startBackupScheduler(accountId, exportFn);
+    }
+
+    // Show backup folder prompt if File System Access is available and no folder chosen yet
+    getBackupHandle(accountId).then(handle => {
+      if (!handle && 'showDirectoryPicker' in window) {
+        setShowBackupPrompt(true);
+      }
+    });
   }, []);
 
   // Load content when active view changes
@@ -110,25 +137,35 @@ export default function App() {
     }
   }, [activeView, activeJournalEntry, activeCorePoint, activeIssue]);
 
-  // Autosave
+  // Autosave + OPFS mirror
+  const accountId = localStorage.getItem('daybefore_email') ?? 'local';
   useEffect(() => {
     const timeout = setTimeout(async () => {
       if (activeView.type === 'journal' && activeView.id) {
         const e = await db.journalEntries.get(activeView.id);
         if (e && e.content !== draftContent) {
-          await db.journalEntries.update(activeView.id, { content: draftContent, updatedAt: Date.now() });
+          const updated = { ...e, content: draftContent, updatedAt: Date.now() };
+          await db.journalEntries.update(activeView.id, { content: draftContent, updatedAt: updated.updatedAt });
+          mirrorToOPFS(accountId, 'journalEntries', updated);
+          markBackupDirty();
           runSync();
         }
       } else if (activeView.type === 'core') {
         const e = await db.corePoints.get(activeView.id);
         if (e && e.content !== draftContent) {
-          await db.corePoints.update(activeView.id, { content: draftContent, updatedAt: Date.now() });
+          const updated = { ...e, content: draftContent, updatedAt: Date.now() };
+          await db.corePoints.update(activeView.id, { content: draftContent, updatedAt: updated.updatedAt });
+          mirrorToOPFS(accountId, 'corePoints', updated);
+          markBackupDirty();
           runSync();
         }
       } else if (activeView.type === 'issue') {
         const e = await db.issues.get(activeView.id);
         if (e && e.content !== draftContent) {
-          await db.issues.update(activeView.id, { content: draftContent, updatedAt: Date.now() });
+          const updated = { ...e, content: draftContent, updatedAt: Date.now() };
+          await db.issues.update(activeView.id, { content: draftContent, updatedAt: updated.updatedAt });
+          mirrorToOPFS(accountId, 'issues', updated);
+          markBackupDirty();
           runSync();
         }
       }
@@ -187,6 +224,34 @@ export default function App() {
     <div className="app-container">
       {showGame && <Game onClose={() => setShowGame(false)} />}
       {showExport && <ExportModal onClose={() => setShowExport(false)} />}
+
+      {showBackupPrompt && (
+        <div style={{
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--bg-color)', border: '1px solid var(--divider)', borderRadius: '8px',
+          padding: '16px 24px', zIndex: 9999, maxWidth: '480px', width: 'calc(100vw - 48px)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)', fontFamily: 'var(--font-sans, inherit)'
+        }}>
+          <p style={{ marginBottom: '12px', fontSize: '0.95rem' }}>
+            <strong>Keep a backup of your journal.</strong> Choose a folder on your computer where Day Before can save an encrypted backup. Your entries will be safe even if you clear your browser data.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => setShowBackupPrompt(false)}
+              style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', background: 'none', border: 'none', cursor: 'pointer' }}>
+              Not now
+            </button>
+            <button
+              onClick={async () => {
+                const chosen = await setupBackupFolder(accountId);
+                if (chosen) setShowBackupPrompt(false);
+              }}
+              style={{ padding: '8px 16px', background: 'var(--text-primary)', color: 'var(--bg-color)', borderRadius: '4px', border: 'none', cursor: 'pointer', fontSize: '0.9rem' }}>
+              Choose folder
+            </button>
+          </div>
+        </div>
+      )}
       
       {!leftPanelCollapsed && (
         <aside className="left-panel">
@@ -323,7 +388,10 @@ export default function App() {
                   if (confirm('Log out?')) {
                     localStorage.removeItem('daybefore_token');
                     localStorage.removeItem('daybefore_salt');
-                    (window as any).e2eKey = null; await db.delete(); await db.open(); window.location.reload();
+                    localStorage.removeItem('daybefore_wrappedKeyPwd');
+                    localStorage.removeItem('daybefore_email');
+                    (window as any).e2eKey = null;
+                    window.location.reload();
                   }
                 } else {
                   window.location.hash = '#auth';
@@ -365,28 +433,66 @@ export default function App() {
           ) : activeView.type === 'core' && activeCorePoint ? (
              <>
               <div className="editor-toolbar">
-                <span className="editor-title">{activeCorePoint.name}</span>
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Autosaved</span>
+                <input
+                  className="editor-title-input"
+                  value={activeCorePoint.name}
+                  onChange={async e => {
+                    await db.corePoints.update(activeCorePoint.id!, { name: e.target.value, updatedAt: Date.now() });
+                    runSync();
+                  }}
+                  style={{ background: 'transparent', border: 'none', outline: 'none', color: 'inherit', fontWeight: 'bold', fontSize: '1.2rem' }}
+                />
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                  <button onClick={async () => {
+                    if (confirm('Delete this Core Point?')) {
+                      await db.corePoints.delete(activeCorePoint.id!);
+                      setActiveView({ type: 'core', id: '' });
+                      runSync();
+                    }
+                  }} title="Delete Core Point" className="text-btn" style={{ fontSize: '1.2rem' }}>
+                    🗑️
+                  </button>
+                  <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Autosaved</span>
+                </div>
               </div>
-              <textarea 
+              <textarea
                 placeholder={`Write about ${activeCorePoint.name}...`}
                 value={draftContent}
                 onChange={e => setDraftContent(e.target.value)}
-                autoFocus 
+                autoFocus
                 className="main-textarea"
               />
             </>
           ) : activeView.type === 'issue' && activeIssue ? (
              <>
               <div className="editor-toolbar">
-                <span className="editor-title">{activeIssue.name}</span>
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Autosaved</span>
+                <input
+                  className="editor-title-input"
+                  value={activeIssue.name}
+                  onChange={async e => {
+                    await db.issues.update(activeIssue.id!, { name: e.target.value, updatedAt: Date.now() });
+                    runSync();
+                  }}
+                  style={{ background: 'transparent', border: 'none', outline: 'none', color: 'inherit', fontWeight: 'bold', fontSize: '1.2rem' }}
+                />
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                  <button onClick={async () => {
+                    if (confirm('Delete this Issue?')) {
+                      await db.issues.delete(activeIssue.id!);
+                      setActiveView({ type: 'issue', id: '' });
+                      runSync();
+                    }
+                  }} title="Delete Issue" className="text-btn" style={{ fontSize: '1.2rem' }}>
+                    🗑️
+                  </button>
+                  <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Autosaved</span>
+                </div>
               </div>
-              <textarea 
+              <textarea
                 placeholder={`Write about ${activeIssue.name}...`}
                 value={draftContent}
                 onChange={e => setDraftContent(e.target.value)}
-                autoFocus 
+                autoFocus
                 className="main-textarea"
               />
             </>

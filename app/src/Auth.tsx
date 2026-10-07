@@ -11,6 +11,7 @@ export default function Auth() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [recoveryKeyDisplay, setRecoveryKeyDisplay] = useState('');
+  const [isMigration, setIsMigration] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +51,7 @@ export default function Auth() {
 
       localStorage.setItem('daybefore_token', data.token);
       localStorage.setItem('daybefore_salt', data.salt);
+      localStorage.setItem('daybefore_email', email);
 
       let saltArr = new Uint8Array(16);
       if (data.salt && data.salt !== "null" && data.salt !== "undefined") {
@@ -68,6 +70,7 @@ export default function Auth() {
       if (isLogin) {
         if (data.wrappedKeyPwd) {
           // V2 Login
+          localStorage.setItem('daybefore_wrappedKeyPwd', data.wrappedKeyPwd);
           const dataKey = await unwrapDataKey(data.wrappedKeyPwd, pwdKey);
           (window as any).e2eKey = dataKey;
           window.location.hash = '#app';
@@ -79,22 +82,23 @@ export default function Auth() {
           const recKeyObj = await deriveRecoveryKey(recoveryKeyStr);
           const wrappedKeyPwd = await wrapDataKey(pwdKey, pwdKey);
           const wrappedKeyRecovery = await wrapDataKey(pwdKey, recKeyObj);
-          
+
+          localStorage.setItem('daybefore_wrappedKeyPwd', wrappedKeyPwd);
           await fetch(`${API_URL}/auth/migrate-v2`, {
             method: 'POST',
-            headers: { 
+            headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${data.token}`
             },
             body: JSON.stringify({ wrappedKeyPwd, wrappedKeyRecovery })
           });
-          
+
+          setIsMigration(true);
           setRecoveryKeyDisplay(recoveryKeyStr);
         }
       } else {
         // Register success
-        (window as any).e2eKey = await deriveKey(password, localSalt!); // Wait, we should unwrap or just store dataKey. Let's unwrap to be sure or just hold it.
-        // Actually, we generated dataKey above, but it's lost in scope. Let's re-unwrap it.
+        localStorage.setItem('daybefore_wrappedKeyPwd', payload.wrappedKeyPwd);
         const dataKey = await unwrapDataKey(payload.wrappedKeyPwd, pwdKey);
         (window as any).e2eKey = dataKey;
         
@@ -110,10 +114,13 @@ export default function Auth() {
   if (recoveryKeyDisplay) {
     return (
       <div className="auth-container" style={{ textAlign: 'center' }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '16px', fontWeight: 500 }}>Save Your Recovery Key</h2>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '16px', fontWeight: 500 }}>
+          {isMigration ? 'Account Upgraded — Save Your Recovery Key' : 'Save Your Recovery Key'}
+        </h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: '1.5' }}>
-          This is the ONLY way to recover your journal if you forget your password. We cannot reset it for you.
-          Please write it down or save it somewhere safe.
+          {isMigration
+            ? 'Your account has been upgraded to stronger encryption. This recovery key is the ONLY way to access your entries if you ever forget your password. This screen appears once — save it now.'
+            : 'This is the ONLY way to recover your journal if you forget your password. We cannot reset it for you. Please write it down or save it somewhere safe.'}
         </p>
         <div style={{ 
           background: 'var(--color-raised, #262321)', 
@@ -158,12 +165,13 @@ export default function Auth() {
           required
           style={{ padding: '12px', background: 'transparent', border: '1px solid var(--divider, #36312d)', color: 'var(--text-primary, #e8e4df)', fontSize: '1rem', borderRadius: '4px' }}
         />
-        <input 
-          type="password" 
+        <input
+          type="password"
           placeholder="Passphrase"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="new-password"
           style={{ padding: '12px', background: 'transparent', border: '1px solid var(--divider, #36312d)', color: 'var(--text-primary, #e8e4df)', fontSize: '1rem', borderRadius: '4px' }}
         />
         
@@ -175,13 +183,21 @@ export default function Auth() {
         </button>
       </form>
 
-      <div style={{ marginTop: '24px', textAlign: 'center' }}>
-        <button 
+      <div style={{ marginTop: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <button
           type="button"
           onClick={() => { setIsLogin(!isLogin); setError(''); }}
           style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary, #968d86)', cursor: 'pointer', textDecoration: 'underline' }}>
           {isLogin ? "Don't have an account? Register" : "Already have an account? Log In"}
         </button>
+        {isLogin && (
+          <button
+            type="button"
+            onClick={() => window.location.hash = '#forgot'}
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary, #968d86)', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.9rem' }}>
+            Forgot your password?
+          </button>
+        )}
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ export default function Legal() {
 
       <section style={{ marginBottom: '64px' }}>
         <h2 style={{ color: 'var(--text-primary)', marginBottom: '16px' }}>Privacy Policy</h2>
-        <p>We believe in absolute data privacy. All journal entries and core points are end-to-end encrypted on your device using AES-GCM 256. Our servers only store encrypted blobs and can never read your content. We collect your email address for account authentication and billing purposes only.</p>
+        <p>We believe in absolute data privacy. All journal entries and core points are end-to-end encrypted on your device using AES-GCM 256. Our servers only store encrypted blobs and can never read your content. We do not store your email address; it is converted into an anonymized hash for account authentication and billing. We only collect the general region (continent) from which you registered for anonymous internal metrics.</p>
         <p>We use Plausible Analytics, a cookieless, privacy-first tool, to count anonymous visits and which areas get used, without tracking personal identities.</p>
       </section>
 
