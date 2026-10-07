@@ -2,7 +2,10 @@
     <uses-permission android:name="android.permission.INTERNET"/>`n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>`n    <application
         android:label="Day Before"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/backup_rules_v31">
         <activity
             android:name=".MainActivity"
             android:exported="true"
