@@ -329,7 +329,7 @@ class EditorArea extends StatelessWidget {
     final state = context.watch<AppState>();
     
     if (state.activeType == null) {
-      return const Center(child: Text('Select an entry from the sidebar, or create a new one.'));
+      return const Center(child: Text('Select an entry, or create a new one.'));
     }
 
     String title = '';
@@ -407,18 +407,19 @@ class _AuthScreenState extends State<AuthScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  isMigration ? 'Account Upgraded' : 'Save Your Recovery Key',
+                  isMigration ? 'Account Upgraded — Recovery Key' : 'Our Recovery Key',
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   isMigration
-                    ? 'Your account has been upgraded to stronger encryption. '
-                      'This key is the ONLY way to recover your journal if you forget your password. '
+                    ? 'Our account has been upgraded to stronger encryption. '
+                      'This key is the only way to access our entries if we forget our password. '
                       'This screen appears once — save it now.'
-                    : 'This is the ONLY way to recover your journal if you forget your password. '
-                      'We cannot reset it for you. Write it down or save it somewhere safe.',
+                    : 'This key is the only way to recover our journal if we forget our password. '
+                      'Nobody can reset it for us — that is the honest trade-off of real encryption. '
+                      'Write it down or keep it somewhere safe.',
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.grey),
                 ),
@@ -441,7 +442,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     setState(() => recoveryKey = null);
                     context.go('/');
                   },
-                  child: const Text('I have saved it'),
+                  child: const Text('I have saved this'),
                 ),
               ],
             ),
@@ -498,7 +499,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               TextButton(
                 onPressed: () => context.go('/'),
-                child: const Text("Skip & Use Offline"),
+                child: const Text("Use offline only"),
               )
             ],
           ),

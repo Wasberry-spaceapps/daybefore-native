@@ -42,7 +42,7 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
         context.go(dest);
       }
     } catch (_) {
-      setState(() => _error = 'That password did not match.');
+      setState(() => _error = 'That password did not match ours.');
       _shakeController.forward(from: 0);
     } finally {
       if (mounted) setState(() => _unlocking = false);
@@ -54,7 +54,7 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Sign out?'),
-        content: const Text('Your entries remain on this device. You can sign back in any time.'),
+        content: const Text('Our entries remain on this device. We can sign back in any time.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Sign out')),
@@ -71,13 +71,13 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Forgot your password?'),
+        title: const Text('Forgot our password?'),
         content: const Text(
-          'Day Before uses end-to-end encryption — your password never leaves your device, '
-          'so we cannot send a reset email.\n\n'
-          'If you have your recovery key, password reset is coming soon.\n\n'
-          'Without your recovery key, your encrypted entries cannot be recovered. '
-          'You can sign out and start fresh.',
+          'Day Before uses end-to-end encryption — our password never leaves our device, '
+          'so there is no reset email to send.\n\n'
+          'If we have our recovery key, password reset is coming soon.\n\n'
+          'Without it, the encrypted entries cannot be recovered. '
+          'We can sign out and start fresh. This is the honest trade-off of real encryption.',
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
@@ -121,7 +121,7 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
                         fontWeight: FontWeight.w600, color: palette.text)),
                     const SizedBox(height: 12),
                     Text(
-                      'Enter your password to open your journal.',
+                      'Enter our password to continue.',
                       textAlign: TextAlign.center,
                       style: Ty.body(palette.muted),
                     ),
