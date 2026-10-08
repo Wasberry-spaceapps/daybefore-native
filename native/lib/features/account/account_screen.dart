@@ -202,7 +202,7 @@ class _AccountScreenState extends State<AccountScreen> {
         backgroundColor: palette.raised,
         title: Text('Sign out?', style: Ty.titleSm(palette.text)),
         content: Text(
-          'Our entries remain on this device. We can sign back in any time.',
+          'Your entries remain on this device. You can sign back in any time.',
           style: Ty.body(palette.muted),
         ),
         actions: [
@@ -323,12 +323,12 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'We have ${widget.entryCount} ${widget.entryCount == 1 ? "entry" : "entries"}.',
+            'You have ${widget.entryCount} ${widget.entryCount == 1 ? "entry" : "entries"}.',
             style: Ty.body(palette.text),
           ),
           const SizedBox(height: 8),
           Text(
-            'This will permanently delete all our data from this device. This cannot be undone.',
+            'This will permanently delete all your data from this device. This cannot be undone.',
             style: Ty.body(palette.muted),
           ),
           if (_started && _countdown > 0) ...[

@@ -83,7 +83,7 @@ class _SwitchAccountScreenState extends State<SwitchAccountScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              child: Text('Our journals on this device', style: Ty.titleSm(palette.text)),
+              child: Text('Your journals on this device', style: Ty.titleSm(palette.text)),
             ),
             Expanded(
               child: _loading

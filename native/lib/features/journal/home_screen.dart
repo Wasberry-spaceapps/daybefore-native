@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: Ty.displaySm(palette.text)),
                 const SizedBox(height: 12),
-                Text('Or return to something that keeps coming back.',
+                Text('Or open up something in us that keeps coming back.',
                   textAlign: TextAlign.center,
                   style: Ty.body(palette.muted)),
                 const SizedBox(height: 32),

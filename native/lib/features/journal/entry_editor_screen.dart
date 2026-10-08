@@ -105,7 +105,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
                   style: phone ? Ty.writingSm(palette.text) : Ty.writingLg(palette.text),
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Write the day, or only a line of it.',
+                    hintText: '',
                     hintStyle: phone ? Ty.writingSm(palette.faint) : Ty.writingLg(palette.faint),
                     isDense: true,
                     contentPadding: EdgeInsets.zero,

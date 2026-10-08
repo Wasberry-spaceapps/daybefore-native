@@ -69,7 +69,7 @@ class CorePointScreen extends StatelessWidget {
                         style: Ty.writing(palette.text, phone: isPhone(context)),
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: 'What are the few standards you would like to be held to?',
+                          hintText: '',
                           hintStyle: Ty.writing(palette.faint, phone: isPhone(context)),
                         ),
                         cursorColor: palette.accent,

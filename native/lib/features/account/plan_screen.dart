@@ -35,7 +35,7 @@ class _PlanScreenState extends State<PlanScreen> {
           padding: const EdgeInsets.all(24.0),
           child: Column(
             children: [
-              Text('Sync across your devices', style: Ty.titleLg(palette.text)),
+              Text('Sync across devices', style: Ty.titleLg(palette.text)),
               const SizedBox(height: 16),
               Text(
                 'Writing is free and stays on this device. Sync keeps your encrypted entries on every device you use.',
@@ -82,7 +82,7 @@ class _PlanScreenState extends State<PlanScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'You will finish on the website. If sync ever ends, your entries stay on this device and you can export them.',
+                'You will finish on the website. If sync ever ends, your entries stay on this device and you can export them anytime.',
                 style: Ty.caption(palette.faint),
                 textAlign: TextAlign.center,
               ),

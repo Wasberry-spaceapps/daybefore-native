@@ -75,7 +75,7 @@ class _IssueDetailScreenState extends State<IssueDetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 32),
-                Text("Tabs here: Theory, Returns, Read it back", style: Ty.body(palette.muted)),
+                const SizedBox.shrink(),
               ],
             ),
           ),
