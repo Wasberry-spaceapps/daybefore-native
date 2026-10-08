@@ -1,25 +1,26 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
 import 'package:file_selector/file_selector.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
-import '../../core/storage.dart';
+import '../../models/journal_entry.dart';
+import '../../models/issue.dart';
+import '../../models/core_point.dart';
 import 'markdown_export.dart';
 import 'pdf_export.dart';
 import 'json_export.dart';
 
 class ExportService {
   static Future<void> performExport({
+    required List<JournalEntry> entries,
+    required List<Issue> issues,
+    required List<CorePoint> corePoints,
     required int format, // 0=markdown, 1=pdf, 2=json
     required bool includeJournal,
     required bool includeIssues,
     required bool includeCorePoints,
     required void Function(String) onResult,
   }) async {
-    final entries = await Storage.getEntries();
-    final issues = await Storage.getIssues();
-    final corePoints = await Storage.getCorePoints();
-
     Uint8List bytes;
     String extension;
     String suggestedName;
@@ -77,7 +78,7 @@ class ExportService {
       }
     } else {
       final dir = await getTemporaryDirectory();
-      final file = File('\${dir.path}/\$suggestedName');
+      final file = File('${dir.path}/$suggestedName');
       await file.writeAsBytes(bytes);
       await Share.shareXFiles([XFile(file.path)]);
       onResult('Shared');

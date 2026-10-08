@@ -20,7 +20,6 @@ class MarkdownExport {
     final dateTimeFmt = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     final prefix = 'DayBefore-export-${dateFmt.format(DateTime.now())}';
 
-    // README
     archive.addFile(ArchiveFile(
       '$prefix/README.md',
       utf8.encode(_readme(DateTime.now())).length,
@@ -29,9 +28,10 @@ class MarkdownExport {
 
     if (includeJournal) {
       for (final entry in entries) {
-        final slug = _slugify(entry.title ?? 'untitled');
-        final filename = '${dateFmt.format(entry.date)}-$slug.md';
-        final content = _journalMd(entry, dateFmt, dateTimeFmt);
+        final dateStr = dateFmt.format(DateTime.fromMillisecondsSinceEpoch(entry.createdAt));
+        final slug = _slugify(dateStr);
+        final filename = '$slug.md';
+        final content = _journalMd(entry, dateTimeFmt);
         archive.addFile(ArchiveFile(
           '$prefix/journal/$filename',
           utf8.encode(content).length,
@@ -77,7 +77,7 @@ This folder contains your journal entries, issues, and core points
 exported from Day Before (daybefore.app).
 
 - journal/ — one Markdown file per entry
-- issues/ — one Markdown file per issue, with all revisions and returns
+- issues/ — one Markdown file per issue
 - core-points.md — your core points
 
 You can open these files in any text editor, Obsidian, Notion, or
@@ -85,43 +85,24 @@ any other Markdown-compatible tool.
 ''';
   }
 
-  static String _journalMd(JournalEntry entry, DateFormat dateFmt, DateFormat dateTimeFmt) {
+  static String _journalMd(JournalEntry entry, DateFormat dateTimeFmt) {
     final created = dateTimeFmt.format(DateTime.fromMillisecondsSinceEpoch(entry.createdAt));
     final updated = dateTimeFmt.format(DateTime.fromMillisecondsSinceEpoch(entry.updatedAt));
-    final dateStr = dateFmt.format(entry.date);
     return '''---
-title: "${entry.title ?? 'Untitled'}"
-date: $dateStr
 created: $created
 updated: $updated
 ---
 
-${entry.body ?? ''}
+${entry.content}
 ''';
   }
 
   static String _issueMd(Issue issue, DateFormat dateFmt) {
+    final created = dateFmt.format(DateTime.fromMillisecondsSinceEpoch(issue.createdAt));
     final buffer = StringBuffer();
     buffer.writeln('# ${issue.name}\n');
-    buffer.writeln('## Current theory\n${issue.currentTheory ?? ''}\n');
-    
-    if (issue.revisions.isNotEmpty) {
-      buffer.writeln('## Revisions\n');
-      for (int i = 0; i < issue.revisions.length; i++) {
-        final rev = issue.revisions[i];
-        final dateStr = dateFmt.format(DateTime.fromMillisecondsSinceEpoch(rev.createdAt));
-        buffer.writeln('### Revision ${i + 1} — $dateStr\n${rev.theory}\n');
-      }
-    }
-
-    if (issue.returns.isNotEmpty) {
-      buffer.writeln('## Returns\n');
-      for (final ret in issue.returns) {
-        final dateStr = dateFmt.format(DateTime.fromMillisecondsSinceEpoch(ret.createdAt));
-        buffer.writeln('### $dateStr\n${ret.body}\n');
-      }
-    }
-
+    buffer.writeln('Started: $created\n');
+    buffer.writeln(issue.content);
     return buffer.toString();
   }
 
@@ -129,7 +110,7 @@ ${entry.body ?? ''}
     final buffer = StringBuffer();
     buffer.writeln('# Core Points\n');
     for (int i = 0; i < corePoints.length; i++) {
-      buffer.writeln('${i + 1}. ${corePoints[i].text}');
+      buffer.writeln('${i + 1}. **${corePoints[i].name}**\n   ${corePoints[i].content}');
     }
     buffer.writeln();
     return buffer.toString();

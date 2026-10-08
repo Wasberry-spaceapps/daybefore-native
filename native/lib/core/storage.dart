@@ -68,4 +68,48 @@ class LocalDb {
 
   Future<List<Map<String, dynamic>>> getChangedSince(String table, int since) async =>
       _db.query(table, where: 'updatedAt > ?', whereArgs: [since]);
+
+  Future<Map<String, dynamic>> exportAll() async {
+    final journals = await getAll('journal_entries');
+    final corePoints = await getAll('core_points');
+    final issues = await getAll('issues');
+    final issueEntries = await getAll('issue_entries');
+    return {
+      'version': 1,
+      'exportedAt': DateTime.now().millisecondsSinceEpoch,
+      'journalEntries': journals,
+      'corePoints': corePoints,
+      'issues': issues,
+      'issueEntries': issueEntries,
+    };
+  }
+
+  Future<void> importAll(Map<String, dynamic> data) async {
+    final tables = {
+      'journal_entries': (data['journalEntries'] as List?)?.cast<Map<String, dynamic>>() ?? [],
+      'core_points': (data['corePoints'] as List?)?.cast<Map<String, dynamic>>() ?? [],
+      'issues': (data['issues'] as List?)?.cast<Map<String, dynamic>>() ?? [],
+      'issue_entries': (data['issueEntries'] as List?)?.cast<Map<String, dynamic>>() ?? [],
+    };
+    await _db.transaction((txn) async {
+      for (final entry in tables.entries) {
+        for (final row in entry.value) {
+          await txn.insert(entry.key, row, conflictAlgorithm: ConflictAlgorithm.replace);
+        }
+      }
+    });
+  }
+
+  Future<int> entryCount() async {
+    final r = await _db.rawQuery('SELECT COUNT(*) as c FROM journal_entries');
+    return (r.first['c'] as int?) ?? 0;
+  }
+
+  Future<void> deleteAccount() async {
+    await _db.transaction((txn) async {
+      for (final t in ['journal_entries', 'core_points', 'issues', 'issue_entries']) {
+        await txn.delete(t);
+      }
+    });
+  }
 }

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'backup_format.dart' show sha256Hex;
 
 class BackupInfo {
   final String name;
@@ -21,13 +23,19 @@ class BackupInfo {
   }
 }
 
-class BackupManager {
+class BackupManager extends ChangeNotifier {
   static const _channel = MethodChannel('com.daybefore.backup');
 
   final String accountId;
   final Future<Uint8List> Function() exportEncrypted;
   Timer? _periodicTimer;
   bool _dirty = false;
+  int _lastBackupTime = 0;
+  bool _isBackingUp = false;
+
+  int get lastBackupTime => _lastBackupTime;
+  bool get isBackingUp => _isBackingUp;
+  bool get hasBackup => _lastBackupTime > 0;
 
   BackupManager({required this.accountId, required this.exportEncrypted});
 
@@ -51,29 +59,46 @@ class BackupManager {
   }
 
   Future<void> writeBackup() async {
-    final data = await exportEncrypted();
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final fileName = 'DayBefore-backup-$accountId-$timestamp.enc';
+    _isBackingUp = true;
+    notifyListeners();
+    try {
+      final data = await exportEncrypted();
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = 'DayBefore-backup-$accountId-$timestamp.enc';
+      final checksumFileName = '$fileName.sha256';
+      final checksum = await sha256Hex(data);
+      final checksumContent = Uint8List.fromList('$checksum  $fileName'.codeUnits);
 
-    if (Platform.isAndroid) {
-      await _channel.invokeMethod('writeBackup', {
-        'accountId': accountId,
-        'data': data,
-        'fileName': fileName,
-      });
-    } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      final dir = await getDesktopBackupDir();
-      final file = File(p.join(dir.path, fileName));
-      await file.writeAsBytes(data);
-    } else if (Platform.isIOS) {
-      // Need iCloud path, simplified fallback
-      final docs = await getApplicationDocumentsDirectory();
-      final file = File(p.join(docs.path, fileName));
-      await file.writeAsBytes(data);
+      if (Platform.isAndroid) {
+        await _channel.invokeMethod('writeBackup', {
+          'accountId': accountId,
+          'data': data,
+          'fileName': fileName,
+        });
+        await _channel.invokeMethod('writeBackup', {
+          'accountId': accountId,
+          'data': checksumContent,
+          'fileName': checksumFileName,
+        });
+      } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+        final dir = await getDesktopBackupDir();
+        await File(p.join(dir.path, fileName)).writeAsBytes(data);
+        await File(p.join(dir.path, checksumFileName)).writeAsBytes(checksumContent);
+      } else if (Platform.isIOS) {
+        final docs = await getApplicationDocumentsDirectory();
+        await File(p.join(docs.path, fileName)).writeAsBytes(data);
+        await File(p.join(docs.path, checksumFileName)).writeAsBytes(checksumContent);
+      }
+
+      _dirty = false;
+      _lastBackupTime = timestamp;
+      await _cleanOldBackups();
+    } catch (_) {
+      // Non-fatal — backup failure does not interrupt the user
+    } finally {
+      _isBackingUp = false;
+      notifyListeners();
     }
-
-    _dirty = false;
-    await _cleanOldBackups();
   }
 
   Future<List<BackupInfo>> listBackups() async {
@@ -84,8 +109,12 @@ class BackupManager {
       final dir = await getDesktopBackupDir();
       final files = dir.listSync()
           .whereType<File>()
-          .where((f) => p.basename(f.path).startsWith('DayBefore-backup-$accountId-'))
-          .map((f) => BackupInfo(name: p.basename(f.path), size: f.lengthSync(), modified: f.lastModifiedSync()))
+          .where((f) => p.basename(f.path).startsWith('DayBefore-backup-$accountId-') && f.path.endsWith('.enc'))
+          .map((f) => BackupInfo(
+                name: p.basename(f.path),
+                size: f.lengthSync(),
+                modified: f.lastModifiedSync().millisecondsSinceEpoch,
+              ))
           .toList();
       files.sort((a, b) => b.modified.compareTo(a.modified));
       return files;
@@ -105,16 +134,23 @@ class BackupManager {
     return null;
   }
 
+  Future<void> deleteBackup(String fileName) async {
+    if (Platform.isAndroid) {
+      await _channel.invokeMethod('deleteBackup', {'fileName': fileName});
+      try { await _channel.invokeMethod('deleteBackup', {'fileName': '$fileName.sha256'}); } catch (_) {}
+    } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      final dir = await getDesktopBackupDir();
+      final f = File(p.join(dir.path, fileName));
+      if (await f.exists()) await f.delete();
+      final sha = File(p.join(dir.path, '$fileName.sha256'));
+      if (await sha.exists()) await sha.delete();
+    }
+  }
+
   Future<void> _cleanOldBackups() async {
     final backups = await listBackups();
     for (final old in backups.skip(3)) {
-      if (Platform.isAndroid) {
-        await _channel.invokeMethod('deleteBackup', {'fileName': old.name});
-      } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-        final dir = await getDesktopBackupDir();
-        final file = File(p.join(dir.path, old.name));
-        if (await file.exists()) await file.delete();
-      }
+      await deleteBackup(old.name);
     }
   }
 }

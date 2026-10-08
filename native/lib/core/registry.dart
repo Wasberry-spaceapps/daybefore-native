@@ -90,6 +90,20 @@ class AccountRegistry {
   Future<List<Map<String, dynamic>>> getAllAccounts() async {
     return await _db.query('accounts', orderBy: 'last_accessed_at DESC');
   }
+
+  Future<void> removeAccount(String accountId) async {
+    await _db.delete('accounts', where: 'account_id = ?', whereArgs: [accountId]);
+    final prefs = await SharedPreferences.getInstance();
+    final active = prefs.getString('daybefore_active_account');
+    if (active == accountId) {
+      await prefs.remove('daybefore_active_account');
+    }
+  }
+
+  Future<void> updateEntryCount(String accountId, int count) async {
+    await _db.update('accounts', {'entry_count': count},
+        where: 'account_id = ?', whereArgs: [accountId]);
+  }
 }
 
 final registry = AccountRegistry();

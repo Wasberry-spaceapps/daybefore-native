@@ -291,12 +291,8 @@ class _SidebarState extends State<Sidebar> {
                   child: const Text('Take a minute'),
                 ),
                 TextButton(
-                  onPressed: () => ExportService.exportToPdf(state.journals, state.corePoints, state.issues),
-                  child: const Text('Export to PDF'),
-                ),
-                TextButton(
-                  onPressed: () => ExportService.exportToZip(state.journals, state.corePoints, state.issues),
-                  child: const Text('Export to ZIP'),
+                  onPressed: () => context.push('/export'),
+                  child: const Text('Export'),
                 ),
                 if (const bool.fromEnvironment('SHOW_SUBSCRIBE_LINK', defaultValue: true))
                   TextButton(
