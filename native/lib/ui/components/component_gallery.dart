@@ -135,7 +135,7 @@ class _ComponentGalleryState extends State<ComponentGallery> {
                           const DaySectionHeader(title: 'Empty State'),
                           const SizedBox(height: 16),
                           const DayEmptyState(
-                            illustration: DayIllustrationType.emptyJournal,
+                            illustration: DayIllustrationName.emptyJournal,
                             headline: 'Write the day down.',
                             body: 'Or return to something that keeps coming back.',
                           ),

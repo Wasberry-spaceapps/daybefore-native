@@ -4,7 +4,7 @@ import '../theme_provider.dart';
 import '../tokens.dart';
 
 class DayEmptyState extends StatefulWidget {
-  final DayIllustrationType illustration;
+  final DayIllustrationName illustration;
   final String headline;
   final String body;
 
@@ -74,7 +74,7 @@ class _DayEmptyStateState extends State<DayEmptyState> with SingleTickerProvider
           children: [
             buildItem(
               _anim1,
-              DayIllustration(widget.illustration, size: 120),
+              DayIllustration(name: widget.illustration, size: 120),
             ),
             const SizedBox(height: 16),
             buildItem(

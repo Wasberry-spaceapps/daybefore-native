@@ -92,12 +92,12 @@ class _DayModalState extends State<DayModal> {
     return FocusScope(
       autofocus: true,
       child: Shortcuts(
-        shortcuts: {
-          LogicalKeySet(LogicalKeyboardKey.escape): const Intent(LocalKey.key("escape")),
+        shortcuts: const {
+          SingleActivator(LogicalKeyboardKey.escape): DismissIntent(),
         },
         child: Actions(
           actions: {
-            Intent: CallbackAction(
+            DismissIntent: CallbackAction<DismissIntent>(
               onInvoke: (_) {
                 Navigator.of(context).pop();
                 return null;

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart' show Material;
 import '../theme_provider.dart';
 import '../tokens.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:daybefore/features/shell/day_sidebar.dart';
+import 'package:daybefore/ui/shell/day_sidebar.dart';
 import 'package:flutter/material.dart';
 import 'helpers.dart';
 
