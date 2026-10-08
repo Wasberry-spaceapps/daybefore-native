@@ -115,12 +115,12 @@ export default function Auth() {
     return (
       <div className="auth-container" style={{ textAlign: 'center' }}>
         <h2 style={{ fontSize: '1.5rem', marginBottom: '16px', fontWeight: 500 }}>
-          {isMigration ? 'Account Upgraded — Save Your Recovery Key' : 'Save Your Recovery Key'}
+          {isMigration ? 'Account Upgraded — Recovery Key' : 'Your Recovery Key'}
         </h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: '1.5' }}>
           {isMigration
-            ? 'Your account has been upgraded to stronger encryption. This recovery key is the ONLY way to access your entries if you ever forget your password. This screen appears once — save it now.'
-            : 'This is the ONLY way to recover your journal if you forget your password. We cannot reset it for you. Please write it down or save it somewhere safe.'}
+            ? 'Your account has been upgraded to stronger encryption. This recovery key is the only way to access your entries if you forget your password. This screen appears once — save it now.'
+            : 'This key is the only way to recover your journal if you forget your password. Nobody can reset it for you — that is the honest trade-off of real encryption. Write it down or keep it somewhere safe.'}
         </p>
         <div style={{ 
           background: 'var(--color-raised, #262321)', 
@@ -136,7 +136,7 @@ export default function Auth() {
         <button 
           onClick={() => window.location.hash = '#app'}
           style={{ padding: '12px 24px', background: 'var(--text-primary)', color: 'var(--background, #1a1817)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 500 }}>
-          I have saved it
+          I have saved this
         </button>
       </div>
     );

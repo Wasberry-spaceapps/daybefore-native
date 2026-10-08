@@ -54,11 +54,11 @@ export default function Pricing() {
   const openPaddleCheckout = (priceId: string) => {
     const token = localStorage.getItem('daybefore_token');
     if (!token) {
-      alert('Please create an account first.');
+      alert('You need an account first.');
       window.location.hash = '#auth';
       return;
     }
-    if (!paddleRef.current) return alert("Loading checkout, please wait.");
+    if (!paddleRef.current) return alert("Loading checkout — one moment.");
     paddleRef.current.Checkout.open({
       settings: { displayMode: 'overlay', variant: 'one-page' },
       items: [{ priceId, quantity: 1 }],
@@ -69,7 +69,7 @@ export default function Pricing() {
   const handlePaystackCheckout = async (plan: 'standard' | 'student') => {
     const token = localStorage.getItem('daybefore_token');
     if (!token) {
-      alert('Please create an account first.');
+      alert('You need an account first.');
       window.location.hash = '#auth';
       return;
     }
@@ -100,7 +100,7 @@ export default function Pricing() {
       </div>
       
       <div style={{ marginBottom: '64px' }}>
-        <h2 style={{ fontSize: '1.2rem', marginBottom: '24px', fontWeight: 500 }}>Select a Plan</h2>
+        <h2 style={{ fontSize: '1.2rem', marginBottom: '24px', fontWeight: 500 }}>Plans</h2>
         
         {region === 'loading' ? (
           <div style={{ color: 'var(--text-secondary)' }}>Loading localized pricing...</div>
@@ -108,7 +108,7 @@ export default function Pricing() {
           <div style={{ display: 'grid', gap: '32px' }}>
             <div>
               <div style={{ fontWeight: 500 }}>Free</div>
-              <div style={{ color: 'var(--text-secondary)' }}>Full local app, unlimited entries, all three areas, the game. No account required, nothing ever leaves the device.</div>
+              <div style={{ color: 'var(--text-secondary)' }}>The full journal — entries, issues, core points — with no account required. Everything stays on your device.</div>
               <button 
                 onClick={() => window.location.hash = '#app'}
                 style={{ marginTop: '12px', padding: '8px 16px', border: '1px solid var(--text-primary)', borderRadius: '4px', cursor: 'pointer', background: 'transparent', color: 'var(--text-primary)' }}>
@@ -121,7 +121,7 @@ export default function Pricing() {
                 {/* Paystack NGN Pricing */}
                 <div>
                   <div style={{ fontWeight: 500 }}>₦1,400 / month</div>
-                  <div style={{ color: 'var(--text-secondary)' }}>Adds encrypted cloud sync across devices. (Billed via Paystack)</div>
+                  <div style={{ color: 'var(--text-secondary)' }}>Adds encrypted sync so your entries follow you across devices. (Billed via Paystack)</div>
                   <button 
                     onClick={() => handlePaystackCheckout('standard')}
                     style={{ marginTop: '12px', padding: '8px 16px', border: '1px solid var(--accent)', color: 'var(--accent)', background: 'transparent', borderRadius: '4px', cursor: 'pointer' }}>
@@ -130,7 +130,7 @@ export default function Pricing() {
                 </div>
                 <div>
                   <div style={{ fontWeight: 500 }}>₦800 / month (Student)</div>
-                  <div style={{ color: 'var(--text-secondary)' }}>Discounted sync tier. Requires school email or supporting document for manual verification.</div>
+                  <div style={{ color: 'var(--text-secondary)' }}>Same sync, reduced rate. Requires a school email or supporting document.</div>
                   <button 
                     onClick={() => handlePaystackCheckout('student')}
                     style={{ marginTop: '12px', padding: '8px 16px', border: '1px solid var(--divider)', background: 'transparent', color: 'var(--text-secondary)', borderRadius: '4px', cursor: 'pointer' }}>
@@ -143,7 +143,7 @@ export default function Pricing() {
                 {/* Paddle Global Pricing */}
                 <div>
                   <div style={{ fontWeight: 500 }}>{pricing.standard} / month</div>
-                  <div style={{ color: 'var(--text-secondary)' }}>Adds encrypted cloud sync across devices.</div>
+                  <div style={{ color: 'var(--text-secondary)' }}>Adds encrypted sync so your entries follow you across devices.</div>
                   <button 
                     onClick={() => openPaddleCheckout((import.meta as any).env.VITE_PADDLE_STANDARD_PRICE_ID)}
                     style={{ marginTop: '12px', padding: '8px 16px', border: '1px solid var(--accent)', color: 'var(--accent)', background: 'transparent', borderRadius: '4px', cursor: 'pointer' }}>
@@ -152,7 +152,7 @@ export default function Pricing() {
                 </div>
                 <div>
                   <div style={{ fontWeight: 500 }}>{pricing.student} / month (Student)</div>
-                  <div style={{ color: 'var(--text-secondary)' }}>Discounted sync tier. Requires school email or supporting document for manual verification.</div>
+                  <div style={{ color: 'var(--text-secondary)' }}>Same sync, reduced rate. Requires a school email or supporting document.</div>
                   <button 
                     onClick={() => openPaddleCheckout((import.meta as any).env.VITE_PADDLE_STUDENT_PRICE_ID)}
                     style={{ marginTop: '12px', padding: '8px 16px', border: '1px solid var(--divider)', background: 'transparent', color: 'var(--text-secondary)', borderRadius: '4px', cursor: 'pointer' }}>

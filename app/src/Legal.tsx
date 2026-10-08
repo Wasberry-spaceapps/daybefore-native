@@ -11,19 +11,19 @@ export default function Legal() {
       <section style={{ marginBottom: '64px' }}>
         <h2 style={{ color: 'var(--text-primary)', marginBottom: '16px' }}>Terms of Service</h2>
         <p>Last updated: {new Date().toLocaleDateString()}</p>
-        <p>By using Day Before, you agree to these terms. Day Before is provided "as is" without warranties. You are solely responsible for keeping your passphrase secure; because of our end-to-end encryption, we cannot recover your data if you lose your passphrase. We reserve the right to modify or terminate the service at any time.</p>
+        <p>By using Day Before, you agree to these terms. Day Before is provided as-is, without warranties. You are solely responsible for keeping your passphrase and recovery key safe. Because of end-to-end encryption, nobody — including us — can recover entries without these credentials. The service may be modified or discontinued at any time.</p>
       </section>
 
       <section style={{ marginBottom: '64px' }}>
         <h2 style={{ color: 'var(--text-primary)', marginBottom: '16px' }}>Privacy Policy</h2>
-        <p>We believe in absolute data privacy. All journal entries and core points are end-to-end encrypted on your device using AES-GCM 256. Our servers only store encrypted blobs and can never read your content. We do not store your email address; it is converted into an anonymized hash for account authentication and billing. We only collect the general region (continent) from which you registered for anonymous internal metrics.</p>
-        <p>We use Plausible Analytics, a cookieless, privacy-first tool, to count anonymous visits and which areas get used, without tracking personal identities.</p>
+        <p>All journal entries, issues, and core points are encrypted on your device using AES-GCM-256 before they leave it. What the server stores is ciphertext it cannot read. Your email address is hashed for authentication — the plaintext is not stored server-side. The only metadata collected is the general region (continent) at registration, for anonymous internal metrics.</p>
+        <p>We use Plausible Analytics — cookieless, privacy-first — to count anonymous visits. No personal identities are tracked.</p>
       </section>
 
       <section style={{ marginBottom: '64px' }}>
-        <h2 style={{ color: 'var(--text-primary)', marginBottom: '16px' }}>Refund & Cancellation Policy</h2>
-        <p>You can cancel your subscription at any time through your account settings or by clicking the 'Manage Subscription' link in your original Paddle email receipt. Cancellations take effect at the end of your current billing cycle.</p>
-        <p>If you are unsatisfied with the service, we offer a full refund within 14 days of your initial purchase. Contact support@daybefore.app to request a refund.</p>
+        <h2 style={{ color: 'var(--text-primary)', marginBottom: '16px' }}>Refund &amp; Cancellation Policy</h2>
+        <p>You can cancel your subscription at any time through account settings or the "Manage Subscription" link in the original Paddle email receipt. Cancellation takes effect at the end of the current billing cycle. Your entries remain on the device, fully usable — only sync stops.</p>
+        <p>If you are unsatisfied, a full refund is available within 14 days of the initial purchase. Contact support@daybefore.app.</p>
       </section>
     </div>
   );

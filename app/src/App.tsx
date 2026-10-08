@@ -233,7 +233,7 @@ export default function App() {
           boxShadow: '0 8px 32px rgba(0,0,0,0.5)', fontFamily: 'var(--font-sans, inherit)'
         }}>
           <p style={{ marginBottom: '12px', fontSize: '0.95rem' }}>
-            <strong>Keep a backup of your journal.</strong> Choose a folder on your computer where Day Before can save an encrypted backup. Your entries will be safe even if you clear your browser data.
+            <strong>Keep a backup of your journal.</strong> Choose a folder where Day Before can save an encrypted copy. Your entries stay safe even if you clear your browser data.
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
             <button
@@ -385,7 +385,7 @@ export default function App() {
               style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}
               onClick={async () => {
                 if (localStorage.getItem('daybefore_token')) {
-                  if (confirm('Log out?')) {
+                  if (confirm('Log out? Your entries remain on this device.')) {
                     localStorage.removeItem('daybefore_token');
                     localStorage.removeItem('daybefore_salt');
                     localStorage.removeItem('daybefore_wrappedKeyPwd');
@@ -422,11 +422,10 @@ export default function App() {
                   <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Autosaved</span>
                 </div>
               </div>
-              <textarea 
-                placeholder="Start writing..." 
+              <textarea
                 value={draftContent}
                 onChange={e => setDraftContent(e.target.value)}
-                autoFocus 
+                autoFocus
                 className="main-textarea"
               />
             </>
@@ -444,7 +443,7 @@ export default function App() {
                 />
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                   <button onClick={async () => {
-                    if (confirm('Delete this Core Point?')) {
+                    if (confirm('Delete this core point?')) {
                       await db.corePoints.delete(activeCorePoint.id!);
                       setActiveView({ type: 'core', id: '' });
                       runSync();
@@ -456,7 +455,6 @@ export default function App() {
                 </div>
               </div>
               <textarea
-                placeholder={`Write about ${activeCorePoint.name}...`}
                 value={draftContent}
                 onChange={e => setDraftContent(e.target.value)}
                 autoFocus
@@ -477,7 +475,7 @@ export default function App() {
                 />
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                   <button onClick={async () => {
-                    if (confirm('Delete this Issue?')) {
+                    if (confirm('Delete this issue?')) {
                       await db.issues.delete(activeIssue.id!);
                       setActiveView({ type: 'issue', id: '' });
                       runSync();
@@ -489,7 +487,6 @@ export default function App() {
                 </div>
               </div>
               <textarea
-                placeholder={`Write about ${activeIssue.name}...`}
                 value={draftContent}
                 onChange={e => setDraftContent(e.target.value)}
                 autoFocus
@@ -498,13 +495,8 @@ export default function App() {
             </>
           ) : (
             <div className="empty-state">
-              <p>
-                {activeView.type === 'journal' ? 'Nothing here yet. Write the day, or only a line of it, whichever you have.' : 
-                 activeView.type === 'issue' ? 'Name something you keep getting wrong.' :
-                 activeView.type === 'core' ? 'What are the few standards you would like to be held to?' : ''}
-              </p>
               {activeView.type === 'journal' && (
-                <button onClick={handleNewJournal} className="text-btn" style={{ marginTop: '16px', color: 'var(--accent)', fontSize: '1.2rem' }}>
+                <button onClick={handleNewJournal} className="text-btn" style={{ color: 'var(--accent)', fontSize: '1.2rem' }}>
                   + Create New Entry
                 </button>
               )}

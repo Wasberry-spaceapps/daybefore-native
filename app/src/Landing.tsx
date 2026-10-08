@@ -15,7 +15,7 @@ export default function Landing() {
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '48px 0' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 'normal', margin: 0 }}>Day Before</h1>
         <nav style={{ display: 'flex', gap: '24px' }}>
-          
+
           <a href="#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontFamily: 'var(--font-sans)', fontSize: '0.9rem', marginRight: '24px' }}>Pricing</a><a href="#app" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontFamily: 'var(--font-sans)', fontSize: '0.9rem' }}>Log in</a>
         </nav>
       </header>
@@ -24,13 +24,13 @@ export default function Landing() {
         {/* Hero */}
         <section style={{ margin: '120px 0 80px' }}>
           <h2 style={{ fontSize: '2.5rem', fontWeight: 'normal', margin: '0 0 24px 0', lineHeight: '1.3' }}>
-            Write the day down, then notice what keeps coming back.
+            A journal, with issues.
           </h2>
           <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', margin: '0 0 48px 0', maxWidth: '650px' }}>
-            A private journal, with a quiet place for the few things you keep getting wrong, where you can return to them, reconsider what you believe about them, and read back, in your own words, whether you are changing.
+            We write the day down. And then there are the things that keep coming back — the patterns we notice in ourselves, the deficiencies we would rather not look at but know we must. We open them up, return to them, and over days and weeks work out what we actually think. And then we come back — to remember what we decided, to train it into ourselves, and to refine it further when we can.
           </p>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <button 
+            <button
               onClick={() => window.location.hash = '#app'}
               style={{
                 background: 'var(--text-primary)',
@@ -42,7 +42,7 @@ export default function Landing() {
                 fontSize: '1rem',
                 cursor: 'pointer'
               }}>
-              Open the free app
+              Open the app
             </button>
             <a href="#how-it-works" style={{
               color: 'var(--text-primary)',
@@ -57,7 +57,7 @@ export default function Landing() {
             </a>
           </div>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '24px' }}>
-            It is free and stays on your device, encrypted, and sync is there only if you want it.
+            Free. Encrypted on your device. Sync only if you want it.
           </p>
         </section>
 
@@ -72,28 +72,34 @@ export default function Landing() {
         {/* Two Things In One Place */}
         <section style={{ margin: '120px 0' }}>
           <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 48px 0' }}>
-            Two things in one place
+            What it is
           </h3>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
             <div>
               <h4 style={{ fontSize: '1.75rem', fontWeight: 500, margin: '0 0 12px 0' }}>Journal</h4>
               <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.5' }}>
-                Most days deserve a page, even a short one. Write down what happened and what you made of it, and then leave it alone until you want it again.
+                Most days deserve a page, even a short one. We write down what happened and what we made of it, and then leave it alone until we want it again.
               </p>
             </div>
-            
+
             <div>
               <h4 style={{ fontSize: '1.75rem', fontWeight: 500, margin: '0 0 12px 0' }}>Issues</h4>
               <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.5' }}>
-                Some things in us repeat: a short temper, a flash of envy, a small selfishness we only notice afterwards. Here you can give each one a name and write down what you think causes it and what you intend to try. When it returns, you come back, add what happened, and revise the theory if it no longer holds. The earlier versions stay where they were, dated, so you can watch your thinking change.
+                Some things in us repeat. A short temper. A tendency to take all the credit instead of sharing it. An inability to sit still when the world around us is loud. We give each one a name, and we write what we honestly think is behind it — not the comfortable explanation, the real one. When it surfaces again, we return and add to what we wrote. Often the problem is deeper than we first named it — what looked like an inability to share was really a selfishness we had not fully confronted; the restlessness in loud places was not about the noise but about the stillness we had not yet built in ourselves.
+              </p>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: '16px 0 0 0', lineHeight: '1.5' }}>
+                Over days and weeks, coming back to the same entry, the understanding gets closer to something true. And even once that area of our life settles, new depth opens up — if we built stillness, we now want to hold it even in the moment right after something provokes us. The entries stay, dated. We come back to remember what we decided, to train it into ourselves, and to push it further when we can.
+              </p>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: '16px 0 0 0', lineHeight: '1.5', fontStyle: 'italic' }}>
+                "We are what we repeatedly do." — Will Durant, summarizing Aristotle
               </p>
             </div>
-            
+
             <div>
               <h4 style={{ fontSize: '1.75rem', fontWeight: 500, margin: '0 0 12px 0' }}>Core Points</h4>
               <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.5' }}>
-                The few standards you hold yourself against. Short enough to remember, kept where you will see them.
+                The few standards we hold ourselves against. Short enough to remember, kept where we will see them.
               </p>
             </div>
           </div>
@@ -104,15 +110,15 @@ export default function Landing() {
           <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 32px 0' }}>
             How it works
           </h3>
-          
+
           <ol style={{ padding: 0, margin: 0, listStylePosition: 'inside', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '24px', fontSize: '1.1rem' }}>
-            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Name it.</strong> A single line is enough to begin with.</li>
-            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Write your theory.</strong> why you think it happens, what you believe about it, and what you will try next time.</li>
-            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Return.</strong> when it happens again, record what happened, and change the theory once it stops being true.</li>
+            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Name it.</strong> We recognize something in ourselves that needs work, and we open it up. A single honest line is enough.</li>
+            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Write what we think.</strong> What is behind it. What we believe right now. What we will try the next time it shows up.</li>
+            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Return.</strong> Over days and weeks, we come back. We add to what is there, work through to what we actually think, and arrive at what feels true. The entry stays — a place to return to, to remember what we decided, to hold ourselves to it, and to push it further when we can.</li>
           </ol>
-          
+
           <p style={{ color: 'var(--text-secondary)', marginTop: '32px', fontStyle: 'italic' }}>
-            After some months, read it through from the beginning. What you find there is better evidence than memory.
+            After some months, read it from the beginning. The work we did is there. So is what we have left to do.
           </p>
         </section>
 
@@ -121,19 +127,19 @@ export default function Landing() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px' }}>
             <div>
               <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 24px 0' }}>
-                PRIVATE, AND YOURS TO KEEP
+                Private, and yours to keep
               </h3>
               <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.5' }}>
-                Everything you write is encrypted on your own device before it goes anywhere, so what we store is text we cannot read. The other side of that is that we cannot recover it for you either, which is why you receive a recovery key when you sign up. Please keep it somewhere safe.<br/><br/>Because a journal is often read over a shoulder, Day Before asks for your password again whenever you leave and come back, unless you tell it not to.<br/><br/>Your entries remain yours. You can export all of them at any time, as Markdown or as a PDF, and take them wherever you like.
+                Everything you write is encrypted on your device before it goes anywhere. What the server stores is text it cannot read. The other side of that is real: nobody can recover it for you either — which is why you receive a recovery key when you sign up. Keep it somewhere safe.<br/><br/>Because a journal is often read over a shoulder, Day Before asks for your password again whenever you leave and come back.<br/><br/>Your entries remain yours. You can export all of them at any time, as Markdown or as a PDF, and take them wherever you like.
               </p>
             </div>
-            
+
             <div>
               <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 24px 0' }}>
-                On every device you write on
+                On every device we write on
               </h3>
               <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: '0 0 24px 0', lineHeight: '1.5' }}>
-                Day Before runs in the browser and as an app for Android, Windows and Mac, with iPhone to follow. It works offline, and you can turn on sync whenever you would like your entries in more than one place.
+                Day Before runs in the browser and as an app for Android, Windows, and Mac, with iPhone to follow. It works offline. Sync is there only when you want your entries in more than one place.
               </p>
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <a href="https://github.com/Wasberry-spaceapps/daybefore-native/releases/latest/download/DayBefore-Setup.exe" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>Windows</a>
@@ -152,27 +158,27 @@ export default function Landing() {
           <dl style={{ display: 'flex', flexDirection: 'column', gap: '32px', margin: 0 }}>
             <div>
               <dt style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Who can read my entries?</dt>
-              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>Only you.</dd>
+              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>Only you. End-to-end encrypted, on your device, before anything leaves it.</dd>
             </div>
             <div>
               <dt style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>What if I forget my password?</dt>
-              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>Reset it by email, then use your recovery key to open your older entries. Without the key, older entries stay locked and you can start fresh.</dd>
+              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>That is what the recovery key is for. Without it, the encrypted entries cannot be opened — not by you, not by anyone. This is the honest trade-off of real encryption.</dd>
             </div>
             <div>
-              <dt style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Does it work offline?</dt>
-              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>Yes.</dd>
+              <dt style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Why call them "issues"?</dt>
+              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>Because that is what they are. We are not tracking habits or setting goals — we are confronting the specific things in ourselves that we keep getting wrong. The word is plain and honest, which felt right for something that asks us to be the same.</dd>
             </div>
             <div>
               <dt style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>What happens if I stop paying?</dt>
-              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>You keep everything. Only syncing stops.</dd>
+              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>Nothing. Only syncing across devices stops. The journal and all your entries remain on the device, fully usable.</dd>
             </div>
             <div>
-              <dt style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>How do students get the price?</dt>
-              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>Confirm a school email, or send proof of enrolment.</dd>
+              <dt style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Can I take my entries elsewhere?</dt>
+              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>Export everything, any time. Your entries are yours.</dd>
             </div>
             <div>
-              <dt style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Can I leave?</dt>
-              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>Export everything, any time.</dd>
+              <dt style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Are there streaks?</dt>
+              <dd style={{ color: 'var(--text-secondary)', margin: 0 }}>No. And there will not be. A day we do not write is simply a day we did not write. The point is to come back when we have something to say, not to maintain a number.</dd>
             </div>
           </dl>
         </section>

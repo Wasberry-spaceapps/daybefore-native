@@ -15,18 +15,18 @@ const Download = () => <div className="page-container"><h1>Download</h1></div>;
 const Signup = () => <div className="page-container"><h1>Signup</h1></div>;
 const Forgot = () => (
   <div className="page-container">
-    <h1 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Forgot Your Password?</h1>
+    <h1 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Forgot your password?</h1>
     <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontFamily: 'var(--font-sans, inherit)' }}>
       <button onClick={() => window.location.hash = ''} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>← Home</button>
     </p>
     <p style={{ lineHeight: '1.8', marginBottom: '24px' }}>
-      Day Before uses end-to-end encryption. Your password never leaves your device in plain form, so we cannot email you a reset link.
+      Day Before uses end-to-end encryption. Your password never leaves your device in plain form, so there is no reset email to send.
     </p>
     <p style={{ lineHeight: '1.8', marginBottom: '24px' }}>
       <strong>If you have your recovery key</strong> — password reset via recovery key is coming soon. In the meantime, contact support.
     </p>
     <p style={{ lineHeight: '1.8', marginBottom: '48px', color: 'var(--text-secondary)' }}>
-      <strong style={{ color: 'var(--text-primary)' }}>If you don't have your recovery key</strong> — your encrypted entries cannot be recovered. You can create a new account and start fresh.
+      <strong style={{ color: 'var(--text-primary)' }}>If you do not have your recovery key</strong> — the encrypted entries cannot be recovered. You can create a new account and start fresh. This is the honest trade-off of real encryption.
     </p>
     <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
       <button onClick={() => window.location.hash = '#auth'} style={{ padding: '12px 24px', border: '1px solid var(--divider, #333)', borderRadius: '4px', cursor: 'pointer' }}>Back to Login</button>
@@ -105,7 +105,7 @@ function AppWrapper() {
         color: 'var(--text-primary)', fontFamily: 'var(--font-display)'
       }}>
         <h1 style={{fontSize: '2rem', marginBottom: '8px'}}>Day Before</h1>
-        <p style={{color: 'var(--text-secondary)', marginBottom: '32px', fontFamily: 'var(--font-sans)'}}>Enter your password to open your journal.</p>
+        <p style={{color: 'var(--text-secondary)', marginBottom: '32px', fontFamily: 'var(--font-sans)'}}>Enter your password to continue.</p>
         <div style={{display: 'flex', gap: '8px'}}>
           <input
             type="password"
