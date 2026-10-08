@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../theme_provider.dart';
 
 enum DayIllustrationName {
   emptyJournal,

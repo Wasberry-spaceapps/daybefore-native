@@ -72,10 +72,8 @@ class _PlanScreenState extends State<PlanScreen> {
                 child: Text('I am a student', style: Ty.body(palette.accent)),
               ),
               const SizedBox(height: 24),
-              DayButton(
+              DayButton.primary(
                 label: 'Continue',
-                variant: DayButtonVariant.primary,
-                fullWidth: true,
                 onTap: () {
                   // Launch URL logic
                 },

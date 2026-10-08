@@ -46,24 +46,17 @@ class _SignInScreenState extends State<SignInScreen> {
                 DayTextField(
                   label: 'Email address',
                   controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: 16),
                 DayTextField(
                   label: 'Password',
                   controller: _passwordController,
-                  obscure: true,
-                  showEyeToggle: true,
-                  textInputAction: TextInputAction.done,
+                  isPassword: true,
                   onSubmitted: (_) {},
                 ),
                 const SizedBox(height: 24),
-                DayButton(
+                DayButton.primary(
                   label: 'Sign in',
-                  variant: DayButtonVariant.primary,
-                  fullWidth: true,
-                  loading: false,
                   onTap: () {},
                 ),
                 const SizedBox(height: 16),

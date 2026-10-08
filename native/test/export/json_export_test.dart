@@ -5,7 +5,7 @@ import 'package:daybefore/models/journal_entry.dart';
 
 void main() {
   test('JSON Export generates valid JSON', () {
-    final entries = [JournalEntry(id: '1', date: DateTime.now(), createdAt: 0, updatedAt: 0, title: 'Test', body: 'Test', isSynced: false, isDeleted: false)];
+    final entries = [JournalEntry(id: '1', content: 'Test', createdAt: 0, updatedAt: 0)];
     final bytes = JsonExport.generate(
       entries: entries, issues: [], corePoints: [],
       includeJournal: true, includeIssues: true, includeCorePoints: true,

@@ -23,6 +23,9 @@ class _ExportScreenState extends State<ExportScreen> {
     setState(() => _isExporting = true);
     try {
       await ExportService.performExport(
+        entries: const [],
+        issues: const [],
+        corePoints: const [],
         format: _format,
         includeJournal: true,
         includeIssues: true,
@@ -47,7 +50,7 @@ class _ExportScreenState extends State<ExportScreen> {
       appBar: AppBar(
         backgroundColor: palette.ground,
         elevation: 0,
-        leading: DayIconButton(icon: 'back', size: 44, onTap: () => context.pop()),
+        leading: DayIconButton(icon: Icons.arrow_back, onTap: () => context.pop()),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -70,7 +73,7 @@ class _ExportScreenState extends State<ExportScreen> {
                     selected: _format == 0,
                     onTap: () => setState(() => _format = 0),
                     title: 'Markdown',
-                    pill: DayStatusPill(label: 'recommended', color: palette.accentMuted),
+                    pill: const DayStatusPill(label: 'recommended', variant: DayStatusPillVariant.accent),
                     description: 'One file per entry, in a zip. Opens in Obsidian, Notion and any text editor.',
                   ),
                   const SizedBox(height: 12),

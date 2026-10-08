@@ -129,20 +129,17 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
                     DayTextField(
                       controller: _controller,
                       label: 'Password',
-                      obscure: true,
-                      textInputAction: TextInputAction.done,
+                      isPassword: true,
                       onSubmitted: (_) => _unlock(),
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 12),
-                      DayFormError(text: _error!),
+                      DayFormError(errorText: _error!),
                     ],
                     const SizedBox(height: 24),
-                    DayButton(
+                    DayButton.primary(
                       label: 'Unlock',
-                      variant: DayButtonVariant.primary,
-                      fullWidth: true,
-                      loading: _unlocking,
+                      isLoading: _unlocking,
                       onTap: _unlock,
                     ),
                     const SizedBox(height: 16),

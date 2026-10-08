@@ -34,10 +34,8 @@ class DaySidebar extends StatelessWidget {
         const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: DayButton(
+          child: DayButton.primary(
             label: 'New entry',
-            variant: DayButtonVariant.primary,
-            icon: DayIconName.newEntry, // Not exactly matching component, but roughly
             onTap: () {
               if (Scaffold.maybeOf(context)?.hasDrawer ?? false) {
                 Scaffold.of(context).closeDrawer();

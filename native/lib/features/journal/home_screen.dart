@@ -38,15 +38,13 @@ class HomeScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    DayButton(
+                    DayButton.primary(
                       label: 'New entry',
-                      variant: DayButtonVariant.primary,
                       onTap: () => context.goNamed('entry', pathParameters: {'id': 'new'}),
                     ),
                     const SizedBox(width: 12),
-                    DayButton(
+                    DayButton.quiet(
                       label: 'Open an issue',
-                      variant: DayButtonVariant.quiet,
                       onTap: () => context.goNamed('issue', pathParameters: {'id': 'new'}),
                     ),
                   ],

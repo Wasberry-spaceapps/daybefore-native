@@ -193,9 +193,7 @@ class _MinuteScreenState extends State<MinuteScreen> with SingleTickerProviderSt
             top: MediaQuery.of(context).padding.top + 8,
             left: 8,
             child: DayIconButton(
-              icon: 'close',
-              size: 44,
-              color: palette.text,
+              icon: Icons.close,
               onTap: () => GoRouter.of(context).pop(),
             ),
           ),
