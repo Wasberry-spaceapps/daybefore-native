@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+// AUTO-GENERATED color constants — see gen_colors.dart.
+// This import makes AppColors and AppTypography available alongside Palette.
+export 'gen_colors.dart';
+
 // ─── Palette ──────────────────────────────────────────────────────
 class Palette {
   final Color ground;
@@ -34,6 +38,11 @@ class Palette {
   final Color focusRing;
   final Brightness brightness;
 
+  // Content-type marker colors (dots, thin borders)
+  final Color journal;
+  final Color issue;
+  final Color core;
+
   const Palette({
     required this.ground,
     required this.sidebar,
@@ -65,6 +74,9 @@ class Palette {
     required this.skeletonShimmer,
     required this.focusRing,
     required this.brightness,
+    required this.journal,
+    required this.issue,
+    required this.core,
   });
 
   SystemUiOverlayStyle get systemOverlayStyle => brightness == Brightness.dark
@@ -108,6 +120,9 @@ class Palette {
     skeletonShimmer:    Color(0xFF2A2724),
     focusRing:          Color(0xFFD4A25A),
     brightness:         Brightness.dark,
+    journal:            Color(0xFF5C7E96),
+    issue:              Color(0xFF966868),
+    core:               Color(0xFF6A8E6A),
   );
 
   static const day = Palette(
@@ -123,8 +138,8 @@ class Palette {
     muted:              Color(0xFF6A6358),
     faint:              Color(0xFF9A9283),
     ghost:              Color(0xFFC8BFB0),
-    accent:             Color(0xFFA8691F),
-    accentMuted:        Color(0x33A8691F),
+    accent:             Color(0xFFA9772F),
+    accentMuted:        Color(0x33A9772F),
     accentInk:          Color(0xFFFFF8EC),
     danger:             Color(0xFFB5483A),
     dangerMuted:        Color(0x33B5483A),
@@ -139,8 +154,11 @@ class Palette {
     overlay:            Color(0x99000000),
     skeleton:           Color(0xFFE9E1D2),
     skeletonShimmer:    Color(0xFFF6F1E8),
-    focusRing:          Color(0xFFA8691F),
+    focusRing:          Color(0xFFA9772F),
     brightness:         Brightness.light,
+    journal:            Color(0xFF3D6680),
+    issue:              Color(0xFF7A4040),
+    core:               Color(0xFF3E6A3E),
   );
 }
 
@@ -220,7 +238,7 @@ class Depth {
 
 // ─── Typography ───────────────────────────────────────────────────
 class Ty {
-  static const String serif = 'Gelasio';
+  static const String serif = 'Newsreader';
   static const String sans  = 'Inter';
 
   // Display: hero text, lock screen title, empty-state headlines

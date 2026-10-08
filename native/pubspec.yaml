@@ -42,14 +42,14 @@ flutter:
     - assets/icons/
     - assets/illustrations/
   fonts:
-    - family: Gelasio
+    - family: Newsreader
       fonts:
-        - asset: assets/fonts/Gelasio-Regular.ttf
-        - asset: assets/fonts/Gelasio-Italic.ttf
+        - asset: assets/fonts/Newsreader-Regular.ttf
+        - asset: assets/fonts/Newsreader-Italic.ttf
           style: italic
-        - asset: assets/fonts/Gelasio-Medium.ttf
+        - asset: assets/fonts/Newsreader-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Gelasio-SemiBold.ttf
+        - asset: assets/fonts/Newsreader-SemiBold.ttf
           weight: 600
     - family: Inter
       fonts:

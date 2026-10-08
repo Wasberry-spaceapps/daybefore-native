@@ -59,7 +59,7 @@ class DaySidebar extends StatelessWidget {
               DayIcon(name: DayIconName.horizon, size: 22, color: palette.accent),
               const SizedBox(width: 10),
               Text('Day Before',
-                style: TextStyle(fontFamily: 'Gelasio', fontSize: 20, height: 26 / 20,
+                style: TextStyle(fontFamily: 'Newsreader', fontSize: 20, height: 26 / 20,
                   fontWeight: FontWeight.w600, color: palette.text)),
             ],
           ),
@@ -124,7 +124,7 @@ class _SidebarSection extends StatefulWidget {
   final String? selectedId;
   final VoidCallback onAdd;
 
-  const _SidebarSection({required this.title, required this.items, this.selectedId, required this.onAdd});
+  const _SidebarSection({required this.title, required this.items, required this.onAdd});
 
   @override
   State<_SidebarSection> createState() => _SidebarSectionState();

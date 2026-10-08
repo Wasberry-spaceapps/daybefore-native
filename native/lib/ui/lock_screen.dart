@@ -117,7 +117,7 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
                     const SizedBox(height: 24),
                     Text('Day Before',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Gelasio', fontSize: 34, height: 40 / 34,
+                      style: TextStyle(fontFamily: 'Newsreader', fontSize: 34, height: 40 / 34,
                         fontWeight: FontWeight.w600, color: palette.text)),
                     const SizedBox(height: 12),
                     Text(

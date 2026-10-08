@@ -35,7 +35,7 @@ class DayTopBar extends StatelessWidget {
           Expanded(
             child: Center(
               child: Text(sectionName,
-                style: TextStyle(fontFamily: 'Gelasio', fontSize: 18, height: 24 / 18,
+                style: TextStyle(fontFamily: 'Newsreader', fontSize: 18, height: 24 / 18,
                   fontWeight: FontWeight.w500, color: palette.text)),
             ),
           ),

@@ -16,9 +16,9 @@ class PdfExport {
     required bool includeIssues,
     required bool includeCorePoints,
   }) async {
-    final regular = pw.Font.ttf(await rootBundle.load('assets/fonts/Gelasio-Regular.ttf'));
-    final bold = pw.Font.ttf(await rootBundle.load('assets/fonts/Gelasio-SemiBold.ttf'));
-    final italic = pw.Font.ttf(await rootBundle.load('assets/fonts/Gelasio-Italic.ttf'));
+    final regular = pw.Font.ttf(await rootBundle.load('assets/fonts/Newsreader-Regular.ttf'));
+    final bold = pw.Font.ttf(await rootBundle.load('assets/fonts/Newsreader-SemiBold.ttf'));
+    final italic = pw.Font.ttf(await rootBundle.load('assets/fonts/Newsreader-Italic.ttf'));
 
     final pdf = pw.Document(
       theme: pw.ThemeData.withFont(base: regular, bold: bold, italic: italic),
