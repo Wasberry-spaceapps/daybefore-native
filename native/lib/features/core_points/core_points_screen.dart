@@ -66,11 +66,11 @@ class CorePointScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       TextField(
                         maxLines: null,
-                        style: Ty.writing(palette.text, phone: isPhone(context)),
+                        style: isPhone(context) ? Ty.writingSm(palette.text) : Ty.writingLg(palette.text),
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: '',
-                          hintStyle: Ty.writing(palette.faint, phone: isPhone(context)),
+                          hintStyle: isPhone(context) ? Ty.writingSm(palette.faint) : Ty.writingLg(palette.faint),
                         ),
                         cursorColor: palette.accent,
                       ),

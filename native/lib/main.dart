@@ -11,6 +11,7 @@ import 'ui/app_shell.dart' show AppState, AuthScreen;
 import 'ui/shell/app_shell.dart' as bespokeShell;
 import 'ui/theme.dart';
 import 'ui/theme_provider.dart';
+import 'ui/tokens.dart';
 import 'features/auth/auth_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'ui/lock_screen.dart';

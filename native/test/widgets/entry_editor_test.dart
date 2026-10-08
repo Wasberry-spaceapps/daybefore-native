@@ -7,7 +7,7 @@ import 'helpers.dart';
 void main() {
   testAtBothSizes('entry editor interaction', (tester, size) async {
     await tester.runAsync(() async {
-      await tester.pumpWidget(wrapForTest(const EntryEditorScreen(), size: size));
+      await tester.pumpWidget(wrapForTest(const EntryEditorScreen(id: 'new'), size: size));
       
       // Fields render
       expect(find.text('Untitled'), findsOneWidget);
