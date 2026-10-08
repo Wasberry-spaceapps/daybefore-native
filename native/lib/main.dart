@@ -7,17 +7,23 @@ import 'core/backup_format.dart' show createBackup;
 import 'core/backup_manager.dart';
 import 'core/storage.dart';
 import 'core/api.dart';
+import 'ui/app_shell.dart' show AppState, AuthScreen;
+import 'ui/shell/app_shell.dart' as bespokeShell;
 import 'ui/theme.dart';
-import 'ui/app_shell.dart';
+import 'ui/theme_provider.dart';
 import 'features/auth/auth_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'ui/lock_screen.dart';
-import 'features/minute/minute_screen.dart';
+import 'features/journal/home_screen.dart';
+import 'features/journal/entry_editor_screen.dart';
+import 'features/issues/issue_detail_screen.dart';
+import 'features/core_points/core_points_screen.dart';
 import 'features/account/account_screen.dart';
 import 'features/account/plan_screen.dart';
 import 'features/account/sign_in_screen.dart';
 import 'features/account/switch_account_screen.dart';
 import 'features/export/export_screen.dart';
+import 'features/minute/minute_screen.dart';
 
 import 'core/registry.dart';
 
@@ -84,7 +90,6 @@ class _DayBeforeAppState extends State<DayBeforeApp> with WidgetsBindingObserver
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // Restore session token on cold start (key is set after lock-screen unlock)
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final auth = context.read<AuthProvider>();
       await auth.tryRestoreSession();
@@ -108,10 +113,6 @@ class _DayBeforeAppState extends State<DayBeforeApp> with WidgetsBindingObserver
           ),
         ),
         GoRoute(
-          path: '/minute',
-          builder: (context, state) => const MinuteScreen(),
-        ),
-        GoRoute(
           path: '/account',
           builder: (context, state) => const AccountScreen(),
         ),
@@ -132,11 +133,35 @@ class _DayBeforeAppState extends State<DayBeforeApp> with WidgetsBindingObserver
           builder: (context, state) => const ExportScreen(),
         ),
         ShellRoute(
-          builder: (context, state, child) => AppShell(child: child),
+          builder: (context, state, child) => bespokeShell.AppShell(child: child),
           routes: [
             GoRoute(
               path: '/',
-              builder: (context, state) => EditorArea(),
+              name: 'home',
+              builder: (context, state) => const HomeScreen(),
+            ),
+            GoRoute(
+              path: '/entry/:id',
+              name: 'entry',
+              builder: (context, state) =>
+                  EntryEditorScreen(id: state.pathParameters['id']!),
+            ),
+            GoRoute(
+              path: '/issue/:id',
+              name: 'issue',
+              builder: (context, state) =>
+                  IssueDetailScreen(id: state.pathParameters['id']!),
+            ),
+            GoRoute(
+              path: '/core/:id',
+              name: 'core',
+              builder: (context, state) =>
+                  CorePointScreen(id: state.pathParameters['id']!),
+            ),
+            GoRoute(
+              path: '/minute',
+              name: 'minute',
+              builder: (context, state) => const MinuteScreen(),
             ),
           ],
         ),
@@ -169,10 +194,13 @@ class _DayBeforeAppState extends State<DayBeforeApp> with WidgetsBindingObserver
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Day Before',
-      theme: darkTheme,
-      routerConfig: _router,
+    return PaletteProvider(
+      palette: Palette.night,
+      child: MaterialApp.router(
+        title: 'Day Before',
+        theme: darkTheme,
+        routerConfig: _router,
+      ),
     );
   }
 }

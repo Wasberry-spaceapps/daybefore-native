@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../theme_provider.dart';
 import '../icons/day_icons.dart';
 import '../components/day_button.dart';
 import '../components/day_avatar.dart';
+import '../app_shell.dart' show AppState;
+
+class _SidebarItemData {
+  final String id;
+  final String label;
+  final String routeName;
+  const _SidebarItemData({required this.id, required this.label, required this.routeName});
+}
+
+String _entryLabel(DateTime d) {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return '${months[d.month - 1]} ${d.day}, ${d.year}';
+}
 
 class DaySidebar extends StatelessWidget {
   final double width;
@@ -12,7 +26,26 @@ class DaySidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = PaletteProvider.of(context);
-    
+    final state = context.watch<AppState>();
+
+    final journalItems = state.journals.map((e) => _SidebarItemData(
+      id: e.id,
+      label: _entryLabel(DateTime.fromMillisecondsSinceEpoch(e.createdAt)),
+      routeName: 'entry',
+    )).toList();
+
+    final issueItems = state.issues.map((e) => _SidebarItemData(
+      id: e.id,
+      label: e.name.isEmpty ? 'Untitled' : e.name,
+      routeName: 'issue',
+    )).toList();
+
+    final coreItems = state.corePoints.map((e) => _SidebarItemData(
+      id: e.id,
+      label: e.name.isEmpty ? 'Untitled' : e.name,
+      routeName: 'core',
+    )).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -45,28 +78,34 @@ class DaySidebar extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        _SidebarSection(
-          title: 'JOURNAL',
-          items: [],
-          onAdd: () => context.goNamed('entry', pathParameters: {'id': 'new'}),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              _SidebarSection(
+                title: 'JOURNAL',
+                items: journalItems,
+                onAdd: () => context.goNamed('entry', pathParameters: {'id': 'new'}),
+              ),
+              _SidebarSection(
+                title: 'ISSUES',
+                items: issueItems,
+                onAdd: () => context.goNamed('issue', pathParameters: {'id': 'new'}),
+              ),
+              _SidebarSection(
+                title: 'CORE POINTS',
+                items: coreItems,
+                onAdd: () => context.goNamed('core', pathParameters: {'id': 'new'}),
+              ),
+            ],
+          ),
         ),
-        _SidebarSection(
-          title: 'ISSUES',
-          items: [],
-          onAdd: () => context.goNamed('issue', pathParameters: {'id': 'new'}),
-        ),
-        _SidebarSection(
-          title: 'CORE POINTS',
-          items: [],
-          onAdd: () => context.goNamed('core', pathParameters: {'id': 'new'}),
-        ),
-        const Spacer(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Container(height: 1, color: palette.hairline),
         ),
         const SizedBox(height: 8),
-        _FooterRow(icon: DayIconName.takeAMinute, label: 'Take a minute', onTap: () => context.go('/minute')),
+        _FooterRow(icon: DayIconName.takeAMinute, label: 'Take a minute', onTap: () => context.goNamed('minute')),
         _FooterRow(icon: DayIconName.export_, label: 'Export', onTap: () => context.go('/export')),
         _FooterRow(
           leading: DayAvatar(size: 28, email: null),
@@ -81,7 +120,7 @@ class DaySidebar extends StatelessWidget {
 
 class _SidebarSection extends StatefulWidget {
   final String title;
-  final List<dynamic> items;
+  final List<_SidebarItemData> items;
   final String? selectedId;
   final VoidCallback onAdd;
 
@@ -129,7 +168,59 @@ class _SidebarSectionState extends State<_SidebarSection> {
             ),
           ),
         ),
+        if (!_collapsed)
+          ...widget.items.map((item) => _SidebarRow(
+            item: item,
+            isSelected: widget.selectedId == item.id,
+          )),
       ],
+    );
+  }
+}
+
+class _SidebarRow extends StatelessWidget {
+  final _SidebarItemData item;
+  final bool isSelected;
+
+  const _SidebarRow({required this.item, required this.isSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = PaletteProvider.of(context);
+    return SizedBox(
+      height: 32,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: () => context.goNamed(item.routeName, pathParameters: {'id': item.id}),
+          hoverColor: palette.hover,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          borderRadius: BorderRadius.circular(6),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: isSelected
+                ? BoxDecoration(
+                    color: palette.hover,
+                    borderRadius: BorderRadius.circular(6),
+                  )
+                : null,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                height: 20 / 13,
+                color: isSelected ? palette.text : palette.muted,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
