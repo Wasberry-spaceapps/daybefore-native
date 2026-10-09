@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
+        shell: bash
         working-directory: native
 
     steps:
@@ -28,6 +29,7 @@ jobs:
           dart --version
 
       - name: pub get
+        id: pubget
         run: flutter pub get
 
       - name: analyze
@@ -41,24 +43,27 @@ jobs:
         run: flutter test 2>&1 | tee test.txt
 
       - name: summary
+        if: always()
         run: |
-          flutter_version=$(flutter --version 2>&1 | head -1)
-          analyze_errors=$(grep -c ' error - ' analyze.txt 2>/dev/null || echo 0)
-          echo "## Verify Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Flutter:** ${flutter_version}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Step | Outcome |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|---------|" >> $GITHUB_STEP_SUMMARY
-          echo "| analyze | ${{ steps.analyze.outcome }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| test    | ${{ steps.test.outcome }}    |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Analyze error lines:** ${analyze_errors}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Last 40 lines of test.txt:**" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -40 test.txt 2>/dev/null || echo "(test.txt not found)" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          analyze_errors=$(grep -c ' error - ' analyze.txt 2>/dev/null || true)
+          {
+            echo "## Verify results"
+            echo
+            echo "Flutter: $(flutter --version 2>&1 | head -1)"
+            echo
+            echo "| Step | Outcome |"
+            echo "|------|---------|"
+            echo "| pub get | ${{ steps.pubget.outcome }} |"
+            echo "| analyze | ${{ steps.analyze.outcome }} |"
+            echo "| test | ${{ steps.test.outcome }} |"
+            echo
+            echo "Analyze error lines: ${analyze_errors:-0}"
+            echo
+            echo "Last 40 lines of test output:"
+            echo '```'
+            tail -40 test.txt 2>/dev/null || echo "(test.txt not found)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -67,12 +72,14 @@ jobs:
           path: |
             native/analyze.txt
             native/test.txt
+          if-no-files-found: warn
 
-      - name: fail if analyze or test did not succeed
+      - name: fail if any step did not succeed
         if: always()
         run: |
-          if [ "${{ steps.analyze.outcome }}" != "success" ] || [ "${{ steps.test.outcome }}" != "success" ]; then
-            echo "analyze outcome: ${{ steps.analyze.outcome }}"
-            echo "test outcome:    ${{ steps.test.outcome }}"
+          echo "pub get: ${{ steps.pubget.outcome }}"
+          echo "analyze: ${{ steps.analyze.outcome }}"
+          echo "test:    ${{ steps.test.outcome }}"
+          if [ "${{ steps.pubget.outcome }}" != "success" ] || [ "${{ steps.analyze.outcome }}" != "success" ] || [ "${{ steps.test.outcome }}" != "success" ]; then
             exit 1
           fi
