@@ -27,6 +27,7 @@ class DaySidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = PaletteProvider.of(context);
     final state = context.watch<AppState>();
+    final activeRouteId = GoRouterState.of(context).pathParameters['id'];
 
     final journalItems = state.journals.map((e) => _SidebarItemData(
       id: e.id,
@@ -85,16 +86,19 @@ class DaySidebar extends StatelessWidget {
               _SidebarSection(
                 title: 'JOURNAL',
                 items: journalItems,
+                selectedId: activeRouteId,
                 onAdd: () => context.goNamed('entry', pathParameters: {'id': 'new'}),
               ),
               _SidebarSection(
                 title: 'ISSUES',
                 items: issueItems,
+                selectedId: activeRouteId,
                 onAdd: () => context.goNamed('issue', pathParameters: {'id': 'new'}),
               ),
               _SidebarSection(
                 title: 'CORE POINTS',
                 items: coreItems,
+                selectedId: activeRouteId,
                 onAdd: () => context.goNamed('core', pathParameters: {'id': 'new'}),
               ),
             ],

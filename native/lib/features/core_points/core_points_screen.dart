@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../../ui/theme_provider.dart';
 import '../../ui/tokens.dart';
 import '../../ui/components/utils.dart';
-import '../../ui/illustrations/day_illustrations.dart';
-import '../../ui/components/day_empty_state.dart';
-import '../../ui/components/day_button.dart';
 
 class CorePointScreen extends StatelessWidget {
   final String id;

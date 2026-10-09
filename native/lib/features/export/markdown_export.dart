@@ -61,7 +61,7 @@ class MarkdownExport {
       ));
     }
 
-    return Uint8List.fromList(ZipEncoder().encode(archive)!);
+    return Uint8List.fromList(ZipEncoder().encode(archive));
   }
 
   static String _slugify(String text) =>

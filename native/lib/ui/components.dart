@@ -112,7 +112,7 @@ class DBCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkRaised : AppColors.lightRaised,
         borderRadius: BorderRadius.circular(8),
-        border: BorderSide(
+        border: Border.all(
           color: isDark ? AppColors.darkHairline : AppColors.lightHairline,
           width: 1,
         ),

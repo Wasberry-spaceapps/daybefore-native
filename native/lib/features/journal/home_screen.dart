@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../ui/theme_provider.dart';
 import '../../ui/components/day_button.dart';
-import '../../ui/components/utils.dart';
 import '../../ui/illustrations/day_illustrations.dart';
 import '../../ui/tokens.dart';
 
@@ -12,7 +11,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = PaletteProvider.of(context);
-    final phone = isPhone(context);
 
     // Empty state for now
     return Center(

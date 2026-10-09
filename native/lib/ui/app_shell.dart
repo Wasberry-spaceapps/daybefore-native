@@ -6,14 +6,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'package:go_router/go_router.dart';
 import '../core/storage.dart';
-import '../core/api.dart';
 import '../core/sync.dart';
 import '../models/journal_entry.dart';
 import '../models/core_point.dart';
 import '../models/issue.dart';
 import '../features/auth/auth_provider.dart';
-import '../features/export/export_service.dart';
-import 'theme.dart';
 
 class AppState extends ChangeNotifier {
   final LocalDb db;
@@ -83,7 +80,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     
     final engine = SyncEngine(api: auth.api, db: db, encryptionKey: auth.encryptionKey!);
-    final success = await engine.sync();
+    await engine.sync();
     
     isSyncing = false;
     await loadAll();

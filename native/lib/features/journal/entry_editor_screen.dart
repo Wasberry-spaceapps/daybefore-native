@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../ui/theme_provider.dart';
 import '../../ui/tokens.dart';
-import '../../ui/components/day_icon_button.dart';
 import '../../ui/components/utils.dart';
-import '../../ui/icons/day_icons.dart';
 
 class EntryEditorScreen extends StatefulWidget {
   final String id;

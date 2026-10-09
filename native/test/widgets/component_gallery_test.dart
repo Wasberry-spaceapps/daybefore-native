@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daybefore/ui/components/component_gallery.dart';
-import 'package:flutter/material.dart';
 import 'helpers.dart';
 
 void main() {
