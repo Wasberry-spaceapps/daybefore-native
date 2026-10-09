@@ -124,7 +124,7 @@ class _SidebarSection extends StatefulWidget {
   final String? selectedId;
   final VoidCallback onAdd;
 
-  const _SidebarSection({required this.title, required this.items, required this.onAdd});
+  const _SidebarSection({required this.title, required this.items, this.selectedId, required this.onAdd});
 
   @override
   State<_SidebarSection> createState() => _SidebarSectionState();
