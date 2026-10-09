@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 // AUTO-GENERATED color constants — see gen_colors.dart.
 // This import makes AppColors and AppTypography available alongside Palette.
+import 'gen_colors.dart';
 export 'gen_colors.dart';
 
 // ─── Palette ──────────────────────────────────────────────────────

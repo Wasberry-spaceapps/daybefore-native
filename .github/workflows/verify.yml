@@ -45,7 +45,7 @@ jobs:
       - name: summary
         if: always()
         run: |
-          analyze_errors=$(grep -c ' error - ' analyze.txt 2>/dev/null || true)
+          analyze_errors=$(grep -c ' error • ' analyze.txt 2>/dev/null || true)
           {
             echo "## Verify results"
             echo
