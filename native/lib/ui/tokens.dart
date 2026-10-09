@@ -6,6 +6,11 @@ import 'package:flutter/services.dart';
 export 'gen_colors.dart';
 
 // ─── Palette ──────────────────────────────────────────────────────
+// Token colors (ground, raised, hairline, text, muted, accent, danger, success,
+// journal, issue, core) are generated from design/tokens.json by
+// design/generate.js and stored in AppColors (gen_colors.dart).
+// Do NOT hand-edit those fields in Palette.night or Palette.day —
+// update tokens.json and re-run `node design/generate.js` instead.
 class Palette {
   final Color ground;
   final Color sidebar;
@@ -89,25 +94,28 @@ class Palette {
           statusBarColor: Colors.transparent,
         );
 
+  // ── Colors come from design/tokens.json via design/generate.js.
+  // ── Do NOT edit the token fields by hand — update tokens.json and re-run
+  // ── `node design/generate.js` from the repo root instead.
   static const night = Palette(
-    ground:             Color(0xFF131211),
+    ground:             AppColors.darkGround,
     sidebar:            Color(0xFF0F0E0D),
-    raised:             Color(0xFF1B1A18),
+    raised:             AppColors.darkRaised,
     sunken:             Color(0xFF0B0A09),
     hover:              Color(0xFF1D1B19),
     pressed:            Color(0xFF242220),
-    hairline:           Color(0xFF2A2724),
+    hairline:           AppColors.darkHairline,
     hairlineBold:       Color(0xFF3A3733),
-    text:               Color(0xFFF2EEE6),
-    muted:              Color(0xFFA39D92),
+    text:               AppColors.darkText,
+    muted:              AppColors.darkMuted,
     faint:              Color(0xFF6E6960),
     ghost:              Color(0xFF3E3A35),
-    accent:             Color(0xFFD4A25A),
-    accentMuted:        Color(0x33D4A25A),
+    accent:             AppColors.darkAccent,
+    accentMuted:        Color(0x33D4A25A), // AppColors.darkAccent @ 20% opacity
     accentInk:          Color(0xFF1A1307),
-    danger:             Color(0xFFE07A6B),
+    danger:             AppColors.darkDanger,
     dangerMuted:        Color(0x33E07A6B),
-    success:            Color(0xFF8DB87A),
+    success:            AppColors.darkSuccess,
     successMuted:       Color(0x338DB87A),
     buttonBg:           Color(0xFFF2EEE6),
     buttonInk:          Color(0xFF131211),
@@ -118,32 +126,32 @@ class Palette {
     overlay:            Color(0xCC000000),
     skeleton:           Color(0xFF1B1A18),
     skeletonShimmer:    Color(0xFF2A2724),
-    focusRing:          Color(0xFFD4A25A),
+    focusRing:          AppColors.darkAccent,
     brightness:         Brightness.dark,
-    journal:            Color(0xFF5C7E96),
-    issue:              Color(0xFF966868),
-    core:               Color(0xFF6A8E6A),
+    journal:            AppColors.darkJournal,
+    issue:              AppColors.darkIssue,
+    core:               AppColors.darkCore,
   );
 
   static const day = Palette(
-    ground:             Color(0xFFF6F1E8),
+    ground:             AppColors.lightGround,
     sidebar:            Color(0xFFEEE7DA),
-    raised:             Color(0xFFFBF8F2),
+    raised:             AppColors.lightRaised,
     sunken:             Color(0xFFE4DDD0),
     hover:              Color(0xFFE9E1D2),
     pressed:            Color(0xFFDDD4C4),
-    hairline:           Color(0xFFDDD4C4),
+    hairline:           AppColors.lightHairline,
     hairlineBold:       Color(0xFFC8BFB0),
-    text:               Color(0xFF1E1A15),
-    muted:              Color(0xFF6A6358),
+    text:               AppColors.lightText,
+    muted:              AppColors.lightMuted,
     faint:              Color(0xFF9A9283),
     ghost:              Color(0xFFC8BFB0),
-    accent:             Color(0xFFA9772F),
-    accentMuted:        Color(0x33A9772F),
+    accent:             AppColors.lightAccent,
+    accentMuted:        Color(0x33A9772F), // AppColors.lightAccent @ 20% opacity
     accentInk:          Color(0xFFFFF8EC),
-    danger:             Color(0xFFB5483A),
+    danger:             AppColors.lightDanger,
     dangerMuted:        Color(0x33B5483A),
-    success:            Color(0xFF4F7A3E),
+    success:            AppColors.lightSuccess,
     successMuted:       Color(0x334F7A3E),
     buttonBg:           Color(0xFF1E1A15),
     buttonInk:          Color(0xFFF6F1E8),
@@ -154,11 +162,11 @@ class Palette {
     overlay:            Color(0x99000000),
     skeleton:           Color(0xFFE9E1D2),
     skeletonShimmer:    Color(0xFFF6F1E8),
-    focusRing:          Color(0xFFA9772F),
+    focusRing:          AppColors.lightAccent,
     brightness:         Brightness.light,
-    journal:            Color(0xFF3D6680),
-    issue:              Color(0xFF7A4040),
-    core:               Color(0xFF3E6A3E),
+    journal:            AppColors.lightJournal,
+    issue:              AppColors.lightIssue,
+    core:               AppColors.lightCore,
   );
 }
 
