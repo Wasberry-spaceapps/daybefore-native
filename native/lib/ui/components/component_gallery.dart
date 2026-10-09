@@ -44,7 +44,7 @@ class _ComponentGalleryState extends State<ComponentGallery> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Component Gallery', style: Ty.heading(palette.text)),
+                          Expanded(child: Text('Component Gallery', style: Ty.heading(palette.text))),
                           // We'll use a placeholder for DayToggle if it's not ready
                           GestureDetector(
                             onTap: () => setState(() => _isDay = !_isDay),

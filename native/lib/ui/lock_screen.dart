@@ -5,7 +5,6 @@ import '../features/auth/auth_provider.dart';
 import 'theme_provider.dart';
 import 'tokens.dart';
 import 'components/day_button.dart';
-import 'components/day_text_field.dart';
 import 'illustrations/day_illustrations.dart';
 import 'components/day_form_error.dart';
 
@@ -121,16 +120,36 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
                         fontWeight: FontWeight.w600, color: palette.text)),
                     const SizedBox(height: 12),
                     Text(
-                      'Enter your password to continue.',
+                      'Enter your password to open your journal.',
                       textAlign: TextAlign.center,
                       style: Ty.body(palette.muted),
                     ),
                     const SizedBox(height: 32),
-                    DayTextField(
+                    TextField(
                       controller: _controller,
-                      label: 'Password',
-                      isPassword: true,
+                      obscureText: true,
+                      autofocus: true,
                       onSubmitted: (_) => _unlock(),
+                      cursorColor: palette.accent,
+                      style: Ty.body(palette.text),
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: Ty.labelSm(palette.muted),
+                        filled: true,
+                        fillColor: palette.raised,
+                        border: OutlineInputBorder(
+                          borderRadius: Rad.bMd,
+                          borderSide: BorderSide(color: palette.hairline),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: Rad.bMd,
+                          borderSide: BorderSide(color: palette.hairline),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: Rad.bMd,
+                          borderSide: BorderSide(color: palette.accent),
+                        ),
+                      ),
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 12),
@@ -143,14 +162,14 @@ class _LockScreenState extends State<LockScreen> with SingleTickerProviderStateM
                       onTap: _unlock,
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 24,
                       children: [
                         GestureDetector(
                           onTap: _forgotPassword,
                           child: Text('Forgot password?', style: Ty.body(palette.muted)),
                         ),
-                        const SizedBox(width: 24),
                         GestureDetector(
                           onTap: _signOut,
                           child: Text('Sign out', style: Ty.body(palette.muted)),
