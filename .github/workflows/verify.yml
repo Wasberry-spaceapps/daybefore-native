@@ -1,0 +1,78 @@
+name: verify
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'design/**'
+      - 'verify/**'
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: native
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: SDK versions
+        run: |
+          flutter --version
+          dart --version
+
+      - name: pub get
+        run: flutter pub get
+
+      - name: analyze
+        id: analyze
+        continue-on-error: true
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 | tee analyze.txt
+
+      - name: test
+        id: test
+        continue-on-error: true
+        run: flutter test 2>&1 | tee test.txt
+
+      - name: summary
+        run: |
+          flutter_version=$(flutter --version 2>&1 | head -1)
+          analyze_errors=$(grep -c ' error - ' analyze.txt 2>/dev/null || echo 0)
+          echo "## Verify Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Flutter:** ${flutter_version}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Step | Outcome |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| analyze | ${{ steps.analyze.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| test    | ${{ steps.test.outcome }}    |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Analyze error lines:** ${analyze_errors}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Last 40 lines of test.txt:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -40 test.txt 2>/dev/null || echo "(test.txt not found)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verify-logs
+          path: |
+            native/analyze.txt
+            native/test.txt
+
+      - name: fail if analyze or test did not succeed
+        if: always()
+        run: |
+          if [ "${{ steps.analyze.outcome }}" != "success" ] || [ "${{ steps.test.outcome }}" != "success" ]; then
+            echo "analyze outcome: ${{ steps.analyze.outcome }}"
+            echo "test outcome:    ${{ steps.test.outcome }}"
+            exit 1
+          fi
