@@ -7,6 +7,9 @@ on:
       - 'windows/**'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -21,7 +24,11 @@ jobs:
       - name: Publish
         run: dotnet publish windows/DayBefore/DayBefore.csproj -c Release -r win-x64 --self-contained -o publish/win
 
-      - name: Upload to Cloudflare R2
-        env:
-          CLOUDFLARE_API_TOKEN: cfat_0Yp2K3pkUi5gTiMGmY4FtdhdGA0NHglyMGSmfLaj3a289c71
-        run: npx wrangler r2 object put daybefore-downloads/DayBefore-Setup.exe --file=publish/win/DayBefore.exe --content-type="application/x-msdownload" --remote
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Build
+          prerelease: false
+          files: publish/win/DayBefore.exe
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -7,6 +7,9 @@ on:
       - 'android/**'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,7 +31,10 @@ jobs:
         working-directory: android
         run: gradle assembleRelease
 
-      - name: Upload to Cloudflare R2
-        env:
-          CLOUDFLARE_API_TOKEN: cfat_0Yp2K3pkUi5gTiMGmY4FtdhdGA0NHglyMGSmfLaj3a289c71
-        run: npx wrangler r2 object put daybefore-downloads/DayBefore.apk --file=android/app/build/outputs/apk/release/app-release-unsigned.apk --content-type="application/vnd.android.package-archive" --remote
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Build
+          files: android/app/build/outputs/apk/release/app-release-unsigned.apk
+          token: ${{ secrets.GITHUB_TOKEN }}

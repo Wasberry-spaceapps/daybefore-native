@@ -7,6 +7,9 @@ on:
       - 'macos/**'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-latest
@@ -25,7 +28,10 @@ jobs:
           APP=$(find macos/build -name "DayBefore.app" -maxdepth 5 | head -1)
           hdiutil create -volname "Day Before" -srcfolder "$APP" -ov -format UDZO macos/DayBefore.dmg
 
-      - name: Upload to Cloudflare R2
-        env:
-          CLOUDFLARE_API_TOKEN: cfat_0Yp2K3pkUi5gTiMGmY4FtdhdGA0NHglyMGSmfLaj3a289c71
-        run: npx wrangler r2 object put daybefore-downloads/DayBefore.dmg --file=macos/DayBefore.dmg --content-type="application/x-apple-diskimage" --remote
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Build
+          files: macos/DayBefore.dmg
+          token: ${{ secrets.GITHUB_TOKEN }}
