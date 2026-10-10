@@ -59,7 +59,7 @@ export default function Landing() {
           {/* Download links — top of page, Android first */}
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginTop: '16px' }}>
             <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Download:</span>
-            <a href="https://github.com/Wasberry-spaceapps/daybefore-native/releases/download/latest/app-release-unsigned.apk" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>Android</a>
+            <a href="https://github.com/Wasberry-spaceapps/daybefore-native/releases/download/latest/DayBefore.apk" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>Android</a>
             <a href="https://github.com/Wasberry-spaceapps/daybefore-native/releases/download/latest/DayBefore.exe" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>Windows</a>
             <a href="https://github.com/Wasberry-spaceapps/daybefore-native/releases/download/latest/DayBefore.dmg" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>macOS</a>
           </div>
