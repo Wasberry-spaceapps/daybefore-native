@@ -1,0 +1,77 @@
+name: Build Windows Installer
+
+on:
+  push:
+    branches: [main]
+    paths: ['DayBefore/**']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore DayBefore/DayBefore.csproj
+
+      - name: Build
+        run: dotnet publish DayBefore/DayBefore.csproj -c Release -r win-x64 --self-contained -o publish
+
+      - name: Create Inno Setup script
+        run: |
+          @"
+          [Setup]
+          AppName=Day Before
+          AppVersion=1.0.0
+          DefaultDirName={autopf}\DayBefore
+          DefaultGroupName=Day Before
+          OutputDir=.
+          OutputBaseFilename=DayBefore-Setup
+          Compression=lzma2
+          SolidCompression=yes
+          PrivilegesRequired=lowest
+          DisableProgramGroupPage=yes
+
+          [Files]
+          Source: "publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+
+          [Icons]
+          Name: "{group}\Day Before"; Filename: "{app}\DayBefore.exe"
+          Name: "{userdesktop}\Day Before"; Filename: "{app}\DayBefore.exe"; Tasks: desktopicon
+
+          [Tasks]
+          Name: "desktopicon"; Description: "Create desktop shortcut"; GroupDescription: "Additional icons:"
+
+          [Run]
+          Filename: "{app}\DayBefore.exe"; Description: "Launch Day Before"; Flags: nowait postinstall skipifsilent
+          "@ | Out-File -FilePath setup.iss -Encoding UTF8
+        shell: pwsh
+
+      - name: Build installer
+        run: |
+          choco install innosetup -y
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
+        shell: pwsh
+
+      - name: Upload to Cloudflare R2
+        if: github.ref == 'refs/heads/main'
+        run: |
+          npm install -g wrangler@4 --silent
+          wrangler r2 object put daybefore-downloads/DayBefore-Setup.exe --file DayBefore-Setup.exe
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Upload installer as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DayBefore-Windows-Installer
+          path: DayBefore-Setup.exe

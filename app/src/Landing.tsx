@@ -15,8 +15,7 @@ export default function Landing() {
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '48px 0' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 'normal', margin: 0 }}>Day Before</h1>
         <nav style={{ display: 'flex', gap: '24px' }}>
-
-          <a href="#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontFamily: 'var(--font-sans)', fontSize: '0.9rem', marginRight: '24px' }}>Pricing</a><a href="#app" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontFamily: 'var(--font-sans)', fontSize: '0.9rem' }}>Log in</a>
+          <a href="#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontFamily: 'var(--font-sans)', fontSize: '0.9rem', marginRight: '24px' }}>Pricing</a><a href="#auth" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontFamily: 'var(--font-sans)', fontSize: '0.9rem' }}>Log in</a>
         </nav>
       </header>
 
@@ -31,10 +30,10 @@ export default function Landing() {
           </p>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
-              onClick={() => window.location.hash = '#app'}
+              onClick={() => window.location.hash = '#auth'}
               style={{
                 background: 'var(--text-primary)',
-                color: 'var(--color-ground, var(--bg-color))',
+                color: '#12100e',
                 border: 'none',
                 padding: '12px 24px',
                 borderRadius: '4px',
@@ -50,13 +49,25 @@ export default function Landing() {
               fontFamily: 'var(--font-sans)',
               fontSize: '1rem',
               padding: '12px 24px',
-              border: '1px solid var(--hairline)',
+              border: '1px solid var(--color-hairline, var(--divider))',
               borderRadius: '4px'
             }}>
               How it works
             </a>
           </div>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '24px' }}>
+
+          {/* Download links — top of page, Android first */}
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginTop: '16px' }}>
+            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Download:</span>
+            <a href="https://pub-f6250097eebe4e02950fe2ccb3214bba.r2.dev/DayBefore.apk" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>Android</a>
+            <a href="https://pub-f6250097eebe4e02950fe2ccb3214bba.r2.dev/DayBefore-Setup.exe" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>Windows</a>
+            <a href="https://pub-f6250097eebe4e02950fe2ccb3214bba.r2.dev/DayBefore.dmg" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>macOS</a>
+          </div>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic', marginTop: '8px' }}>
+            Official Google Play and Apple App Store listings are coming.
+          </p>
+
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '16px' }}>
             Free. Encrypted on your device. Sync only if you want it.
           </p>
         </section>
@@ -89,7 +100,7 @@ export default function Landing() {
                 Some things in us repeat. A short temper. A tendency to take all the credit instead of sharing it. An inability to sit still when the world around us is loud. We give each one a name, and we write what we honestly think is behind it — not the comfortable explanation, the real one. When it surfaces again, we return and add to what we wrote. Often the problem is deeper than we first named it — what looked like an inability to share was really a selfishness we had not fully confronted; the restlessness in loud places was not about the noise but about the stillness we had not yet built in ourselves.
               </p>
               <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: '16px 0 0 0', lineHeight: '1.5' }}>
-                Over days and weeks, coming back to the same entry, the understanding gets closer to something true. And even once that area of our life settles, new depth opens up — if we built stillness, we now want to hold it even in the moment right after something provokes us. The entries stay, dated. We come back to remember what we decided, to train it into ourselves, and to push it further when we can.
+                Over days and weeks, coming back to the same entry, the understanding gets closer to something true. And even once that area of our life settles, new depth opens up — if we built stillness, we now want to hold it even in the moment right after something provokes us. We come back to remember what we decided, to train it into ourselves, and to push it further when we can.
               </p>
               <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: '16px 0 0 0', lineHeight: '1.5', fontStyle: 'italic' }}>
                 "We are what we repeatedly do." — Will Durant, summarizing Aristotle
@@ -113,13 +124,9 @@ export default function Landing() {
 
           <ol style={{ padding: 0, margin: 0, listStylePosition: 'inside', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '24px', fontSize: '1.1rem' }}>
             <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Name it.</strong> We recognize something in ourselves that needs work, and we open it up. A single honest line is enough.</li>
-            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Write what we think.</strong> What is behind it. What we believe right now. What we will try the next time it shows up.</li>
-            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Return.</strong> Over days and weeks, we come back. We add to what is there, work through to what we actually think, and arrive at what feels true. The entry stays — a place to return to, to remember what we decided, to hold ourselves to it, and to push it further when we can.</li>
+            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Sit, think, think well.</strong> We try to find the underlying problem(s). We test them. We use guidance from our teachers. We try to think about them. We try to get better.</li>
+            <li style={{ margin: 0 }}><strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Return.</strong> We return to refine our answers, use right insights from our teachers, remember our answers, and eventually, find peace with that problem.</li>
           </ol>
-
-          <p style={{ color: 'var(--text-secondary)', marginTop: '32px', fontStyle: 'italic' }}>
-            After some months, read it from the beginning. The work we did is there. So is what we have left to do.
-          </p>
         </section>
 
         {/* Security & Platforms */}
@@ -130,7 +137,13 @@ export default function Landing() {
                 Private, and yours to keep
               </h3>
               <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.5' }}>
-                Everything you write is encrypted on your device before it goes anywhere. What the server stores is text it cannot read. The other side of that is real: nobody can recover it for you either — which is why you receive a recovery key when you sign up. Keep it somewhere safe.<br/><br/>Because a journal is often read over a shoulder, Day Before asks for your password again whenever you leave and come back.<br/><br/>Your entries remain yours. You can export all of them at any time, as Markdown or as a PDF, and take them wherever you like.
+                If you use the free plan, your entries never leave your device. They are stored locally, encrypted, and remain entirely yours.
+              </p>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: '16px 0 0 0', lineHeight: '1.5' }}>
+                If you subscribe, your entries are still encrypted on your device before anything is transmitted. What the server stores is ciphertext it cannot read. Nobody — including us — can recover entries without your recovery key. Keep it somewhere safe.
+              </p>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: '16px 0 0 0', lineHeight: '1.5' }}>
+                Because a journal is often read over a shoulder, Day Before asks for your password again whenever you leave and come back.<br/><br/>Your entries remain yours. You can export all of them at any time, as Markdown or as a PDF, and take them wherever you like.
               </p>
             </div>
 
@@ -141,11 +154,6 @@ export default function Landing() {
               <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: '0 0 24px 0', lineHeight: '1.5' }}>
                 Day Before runs in the browser and as an app for Android, Windows, and Mac, with iPhone to follow. It works offline. Sync is there only when you want your entries in more than one place.
               </p>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                <a href="https://github.com/Wasberry-spaceapps/daybefore-native/releases/latest/download/DayBefore-Setup.exe" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>Windows</a>
-                <a href="https://github.com/Wasberry-spaceapps/daybefore-native/releases/latest/download/DayBefore-macOS.dmg" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>Mac</a>
-                <a href="https://github.com/Wasberry-spaceapps/daybefore-native/releases/latest/download/DayBefore-android.apk" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: 'var(--text-primary)', textDecoration: 'underline' }}>Android</a>
-              </div>
             </div>
           </div>
         </section>
