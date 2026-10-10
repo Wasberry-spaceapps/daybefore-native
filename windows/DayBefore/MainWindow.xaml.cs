@@ -78,12 +78,24 @@ public partial class MainWindow : Window
                 SubscribeBtn.Visibility = Visibility.Visible;
             }
         }
+        else
+        {
+            SubStatusLabel.Text = "FREE — local only";
+            SubStatusLabel.Visibility = Visibility.Visible;
+            SubscribeBtn.Visibility = Visibility.Visible;
+            ManageSubBtn.Visibility = Visibility.Collapsed;
+        }
     }
 
     private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e) { if (e.ClickCount == 2) Maximize_Click(sender, e); else DragMove(); }
     private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
     private void Maximize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     private void Close_Click(object sender, RoutedEventArgs e) => Close();
+
+    private void Window_StateChanged(object sender, EventArgs e)
+    {
+        if (WindowState == WindowState.Minimized) Window_Deactivated(sender, e);
+    }
 
     private void Window_Deactivated(object sender, EventArgs e)
     {

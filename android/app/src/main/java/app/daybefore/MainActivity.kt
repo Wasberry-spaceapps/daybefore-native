@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.BackHandler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -316,6 +317,7 @@ fun MainScreen(
         activeId = id
         editorContent = content
         editorTitle = title
+        showSidebar = false
     }
 
     fun saveContent() {
@@ -344,294 +346,168 @@ fun MainScreen(
         saveContent()
     }
 
+    BackHandler(enabled = !showSidebar) { showSidebar = true }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            if (showSidebar) {
-                Column(
-                    modifier = Modifier
-                        .width(280.dp)
-                        .fillMaxHeight()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(24.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Day Before", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp)
-                        TextButton(onClick = {
-                            scope.launch {
-                                val entry = JournalEntry()
-                                db.journalEntryDao().insert(entry)
-                                openEntry("journal", entry.id, "", entry.displayDate)
-                            }
-                        }) {
-                            Text("New Entry", fontWeight = FontWeight.Bold)
-                        }
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-
-                    LazyColumn(modifier = Modifier.weight(1f)) {
-                        item {
-                            SectionHeader("JOURNAL HISTORY", journalCollapsed) { journalCollapsed = !journalCollapsed }
-                        }
-                        if (!journalCollapsed) {
-                            items(journalEntries) { entry ->
-                                EntryItem(
-                                    title = entry.displayDate,
-                                    subtitle = entry.snippet,
-                                    isActive = activeType == "journal" && activeId == entry.id,
-                                    onClick = { openEntry("journal", entry.id, entry.content, entry.displayDate) }
-                                )
-                            }
-                        }
-
-                        item {
-                            SectionHeader("CORE POINTS", coreCollapsed, showAdd = true, onAdd = { newCoreName = "" }) { coreCollapsed = !coreCollapsed }
-                        }
-                        if (!coreCollapsed) {
-                            if (newCoreName != null) {
-                                item {
-                                    OutlinedTextField(
-                                        value = newCoreName!!,
-                                        onValueChange = { newCoreName = it },
-                                        placeholder = { Text("Name...") },
-                                        singleLine = true,
-                                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                        )
-                                    )
-                                }
-                                item {
-                                    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                                        TextButton(onClick = {
-                                            val name = newCoreName?.trim() ?: ""
-                                            if (name.isNotEmpty()) {
-                                                scope.launch {
-                                                    val pt = CorePoint(name = name)
-                                                    db.corePointDao().insert(pt)
-                                                    openEntry("core", pt.id, "", pt.name)
-                                                }
-                                            }
-                                            newCoreName = null
-                                        }) { Text("Add") }
-                                        TextButton(onClick = { newCoreName = null }) { Text("Cancel") }
-                                    }
-                                }
-                            }
-                            items(corePoints) { point ->
-                                EntryItem(
-                                    title = point.name,
-                                    subtitle = point.snippet,
-                                    isActive = activeType == "core" && activeId == point.id,
-                                    onClick = { openEntry("core", point.id, point.content, point.name) }
-                                )
-                            }
-                        }
-
-                        item {
-                            SectionHeader("ISSUES", issuesCollapsed, showAdd = true, onAdd = { newIssueName = "" }) { issuesCollapsed = !issuesCollapsed }
-                        }
-                        if (!issuesCollapsed) {
-                            if (newIssueName != null) {
-                                item {
-                                    OutlinedTextField(
-                                        value = newIssueName!!,
-                                        onValueChange = { newIssueName = it },
-                                        placeholder = { Text("Issue name...") },
-                                        singleLine = true,
-                                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                        )
-                                    )
-                                }
-                                item {
-                                    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                                        TextButton(onClick = {
-                                            val name = newIssueName?.trim() ?: ""
-                                            if (name.isNotEmpty()) {
-                                                scope.launch {
-                                                    val issue = Issue(name = name)
-                                                    db.issueDao().insert(issue)
-                                                    openEntry("issue", issue.id, "", issue.name)
-                                                }
-                                            }
-                                            newIssueName = null
-                                        }) { Text("Add") }
-                                        TextButton(onClick = { newIssueName = null }) { Text("Cancel") }
-                                    }
-                                }
-                            }
-                            items(issues) { issue ->
-                                EntryItem(
-                                    title = issue.name,
-                                    subtitle = issue.snippet,
-                                    isActive = activeType == "issue" && activeId == issue.id,
-                                    onClick = { openEntry("issue", issue.id, issue.content ?: "", issue.name) }
-                                )
-                            }
-                        }
-                    }
-
-                    TextButton(onClick = { showGame = true }) {
-                        Text("take a minute", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp)
-                    }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                    Spacer(Modifier.height(8.dp))
-                    TextButton(onClick = onManageSubscription) { Text("Manage Subscription", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp) }
-                    TextButton(onClick = onLogout) { Text("Log Out", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp) }
-                }
-
-                VerticalDivider(color = MaterialTheme.colorScheme.outline)
-            }
-
+        if (showSidebar) {
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(24.dp)
             ) {
-                // Sidebar toggle
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { showSidebar = !showSidebar }) {
-                        Text(if (showSidebar) "◀" else "▶", color = MaterialTheme.colorScheme.secondary, fontSize = 14.sp)
+                    Text("Day Before", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp)
+                    TextButton(onClick = {
+                        scope.launch {
+                            val entry = JournalEntry()
+                            db.journalEntryDao().insert(entry)
+                            openEntry("journal", entry.id, "", entry.displayDate)
+                        }
+                    }) { Text("New Entry", fontWeight = FontWeight.Bold) }
+                }
+                Spacer(Modifier.height(16.dp))
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    item { SectionHeader("JOURNAL HISTORY", journalCollapsed) { journalCollapsed = !journalCollapsed } }
+                    if (!journalCollapsed) {
+                        items(journalEntries) { entry ->
+                            EntryItem(
+                                title = entry.displayDate, subtitle = entry.snippet,
+                                isActive = activeType == "journal" && activeId == entry.id,
+                                onClick = { openEntry("journal", entry.id, entry.content, entry.displayDate) }
+                            )
+                        }
+                    }
+                    item { SectionHeader("CORE POINTS", coreCollapsed, showAdd = true, onAdd = { newCoreName = "" }) { coreCollapsed = !coreCollapsed } }
+                    if (!coreCollapsed) {
+                        if (newCoreName != null) {
+                            item {
+                                OutlinedTextField(value = newCoreName!!, onValueChange = { newCoreName = it },
+                                    placeholder = { Text("Name...") }, singleLine = true,
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = MaterialTheme.colorScheme.outline))
+                            }
+                            item {
+                                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                                    TextButton(onClick = {
+                                        val name = newCoreName?.trim() ?: ""
+                                        if (name.isNotEmpty()) scope.launch { val pt = CorePoint(name = name); db.corePointDao().insert(pt); openEntry("core", pt.id, "", pt.name) }
+                                        newCoreName = null
+                                    }) { Text("Add") }
+                                    TextButton(onClick = { newCoreName = null }) { Text("Cancel") }
+                                }
+                            }
+                        }
+                        items(corePoints) { point ->
+                            EntryItem(title = point.name, subtitle = point.snippet,
+                                isActive = activeType == "core" && activeId == point.id,
+                                onClick = { openEntry("core", point.id, point.content, point.name) })
+                        }
+                    }
+                    item { SectionHeader("ISSUES", issuesCollapsed, showAdd = true, onAdd = { newIssueName = "" }) { issuesCollapsed = !issuesCollapsed } }
+                    if (!issuesCollapsed) {
+                        if (newIssueName != null) {
+                            item {
+                                OutlinedTextField(value = newIssueName!!, onValueChange = { newIssueName = it },
+                                    placeholder = { Text("Issue name...") }, singleLine = true,
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = MaterialTheme.colorScheme.outline))
+                            }
+                            item {
+                                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                                    TextButton(onClick = {
+                                        val name = newIssueName?.trim() ?: ""
+                                        if (name.isNotEmpty()) scope.launch { val issue = Issue(name = name); db.issueDao().insert(issue); openEntry("issue", issue.id, "", issue.name) }
+                                        newIssueName = null
+                                    }) { Text("Add") }
+                                    TextButton(onClick = { newIssueName = null }) { Text("Cancel") }
+                                }
+                            }
+                        }
+                        items(issues) { issue ->
+                            EntryItem(title = issue.name, subtitle = issue.snippet,
+                                isActive = activeType == "issue" && activeId == issue.id,
+                                onClick = { openEntry("issue", issue.id, issue.content ?: "", issue.name) })
+                        }
                     }
                 }
-
-                Column(modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
+                TextButton(onClick = { showGame = true }) { Text("take a minute", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp) }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                Spacer(Modifier.height(8.dp))
+                TextButton(onClick = onManageSubscription) { Text("Manage Subscription", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp) }
+                TextButton(onClick = onLogout) { Text("Log Out", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp) }
+            }
+        } else {
+            Column(modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp).padding(top = 16.dp, bottom = 24.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = { showSidebar = true }) { Text("← Back", color = MaterialTheme.colorScheme.secondary, fontSize = 14.sp) }
                     if (activeId != null) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            if (activeType == "journal") {
-                                Text(editorTitle.replace(" ", "_") + ".md", fontSize = 15.sp)
-                            } else {
-                                OutlinedTextField(
-                                    value = editorTitle,
-                                    onValueChange = { editorTitle = it },
-                                    singleLine = true,
-                                    modifier = Modifier.weight(1f),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = Color.Transparent,
-                                        unfocusedBorderColor = Color.Transparent
-                                    )
-                                )
-                            }
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Autosaved", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp)
-                                Spacer(Modifier.width(16.dp))
-                                TextButton(onClick = {
-                                    if (activeId != null && activeType != null) {
-                                        pendingDelete = Triple(activeType!!, activeId!!, editorTitle)
-                                        activeType = null
-                                        activeId = null
-                                    }
-                                }) { Text("Delete") }
-                            }
-                        }
-                        Spacer(Modifier.height(16.dp))
-                        OutlinedTextField(
-                            value = editorContent,
-                            onValueChange = { editorContent = it },
-                            modifier = Modifier.fillMaxSize(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.Transparent,
-                                unfocusedBorderColor = Color.Transparent
-                            )
-                        )
-                    } else {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("Autosaved", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp)
+                            Spacer(Modifier.width(8.dp))
                             TextButton(onClick = {
-                                scope.launch {
-                                    val entry = JournalEntry()
-                                    db.journalEntryDao().insert(entry)
-                                    openEntry("journal", entry.id, "", entry.displayDate)
+                                if (activeId != null && activeType != null) {
+                                    pendingDelete = Triple(activeType!!, activeId!!, editorTitle)
+                                    activeType = null; activeId = null; showSidebar = true
                                 }
-                            }) {
-                                Text("+ Create New Entry", fontSize = 19.sp)
-                            }
+                            }) { Text("Delete") }
                         }
                     }
+                }
+                if (activeId != null) {
+                    if (activeType != "journal") {
+                        OutlinedTextField(value = editorTitle, onValueChange = { editorTitle = it }, singleLine = true,
+                            modifier = Modifier.fillMaxWidth(), placeholder = { Text("Title...") },
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Color.Transparent, unfocusedBorderColor = Color.Transparent))
+                    } else {
+                        Text(editorTitle.replace(" ", "_") + ".md", fontSize = 15.sp, modifier = Modifier.padding(vertical = 12.dp))
+                    }
+                    OutlinedTextField(value = editorContent, onValueChange = { editorContent = it },
+                        modifier = Modifier.fillMaxSize(),
+                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Color.Transparent, unfocusedBorderColor = Color.Transparent))
                 }
             }
         }
 
         if (pendingDelete != null) {
-            Snackbar(
-                modifier = Modifier.padding(16.dp).align(Alignment.BottomCenter),
-                action = {
-                    TextButton(onClick = { pendingDelete = null }) { Text("Undo") }
-                }
-            ) {
-                Text("Deleting \"${pendingDelete!!.third}\"...")
-            }
+            Snackbar(modifier = Modifier.padding(16.dp).align(Alignment.BottomCenter),
+                action = { TextButton(onClick = { pendingDelete = null }) { Text("Undo") } }
+            ) { Text("Deleting \"${pendingDelete!!.third}\"...") }
         }
 
-        // Lock overlay
         if (isLocked) {
             var lockPassword by remember { mutableStateOf("") }
             var lockError by remember { mutableStateOf("") }
-            Box(
-                modifier = Modifier.fillMaxSize().background(Color(0xFF1a1817)),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    modifier = Modifier.width(280.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+            Box(modifier = Modifier.fillMaxSize().background(Color(0xFF1a1817)), contentAlignment = Alignment.Center) {
+                Column(modifier = Modifier.width(280.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Day Before", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                     Spacer(Modifier.height(8.dp))
                     Text("Enter your password to continue.", fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary)
                     Spacer(Modifier.height(24.dp))
-                    OutlinedTextField(
-                        value = lockPassword,
-                        onValueChange = { lockPassword = it },
-                        placeholder = { Text("Passphrase") },
-                        singleLine = true,
-                        visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    if (lockError.isNotEmpty()) {
-                        Spacer(Modifier.height(4.dp))
-                        Text(lockError, color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
-                    }
+                    OutlinedTextField(value = lockPassword, onValueChange = { lockPassword = it },
+                        placeholder = { Text("Passphrase") }, singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
+                    if (lockError.isNotEmpty()) { Spacer(Modifier.height(4.dp)); Text(lockError, color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
                     Spacer(Modifier.height(16.dp))
-                    Button(
-                        onClick = {
-                            val salt = Prefs.salt ?: ""
-                            val wrapped = Prefs.wrappedKeyPwd ?: ""
-                            try {
-                                val saltBytes = android.util.Base64.decode(salt, android.util.Base64.NO_WRAP)
-                                val pwdKey = CryptoService.deriveKey(lockPassword, saltBytes)
-                                CryptoService.unwrapDataKey(wrapped, pwdKey)
-                                isLocked = false
-                                lockPassword = ""
-                                lockError = ""
-                            } catch (e: Exception) {
-                                lockError = "That password did not match."
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) { Text("Unlock") }
+                    Button(onClick = {
+                        val salt = Prefs.salt ?: ""; val wrapped = Prefs.wrappedKeyPwd ?: ""
+                        try {
+                            val saltBytes = android.util.Base64.decode(salt, android.util.Base64.NO_WRAP)
+                            val pwdKey = CryptoService.deriveKey(lockPassword, saltBytes)
+                            CryptoService.unwrapDataKey(wrapped, pwdKey)
+                            isLocked = false; lockPassword = ""; lockError = ""
+                        } catch (e: Exception) { lockError = "That password did not match." }
+                    }, modifier = Modifier.fillMaxWidth()) { Text("Unlock") }
                     TextButton(onClick = onLogout) { Text("← Go Home", color = MaterialTheme.colorScheme.secondary) }
                 }
             }
         }
 
-        // Game overlay
-        if (showGame) {
-            GameOverlay(onClose = { showGame = false })
-        }
+        if (showGame) { GameOverlay(onClose = { showGame = false }) }
     }
 }
 

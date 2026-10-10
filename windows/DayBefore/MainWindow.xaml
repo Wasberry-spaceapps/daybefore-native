@@ -6,7 +6,7 @@
         FontFamily="Georgia, Times New Roman"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" WindowState="Maximized" ResizeMode="CanResizeWithGrip"
-        Deactivated="Window_Deactivated">
+        Deactivated="Window_Deactivated" StateChanged="Window_StateChanged">
 
     <Grid>
         <Grid.RowDefinitions>
