@@ -33,7 +33,7 @@ struct AuthView: View {
                     .multilineTextAlignment(.center)
 
                 Text(key)
-                    .font(.system(.body, design: .monospace))
+                    .font(.system(.body, design: .monospaced))
                     .padding()
                     .background(Color(white: 0.15))
                     .cornerRadius(8)
