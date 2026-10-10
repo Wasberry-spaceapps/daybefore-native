@@ -13,39 +13,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_15.0.app
-
       - name: Build
         run: |
           cd macos
-          xcodebuild -project DayBefore.xcodeproj -scheme DayBefore -configuration Release -archivePath build/DayBefore.xcarchive archive
-
-      - name: Export
-        run: |
-          cd macos
-          xcodebuild -exportArchive -archivePath build/DayBefore.xcarchive -exportPath build/export -exportOptionsPlist ExportOptions.plist
+          xcodebuild -project DayBefore.xcodeproj -scheme DayBefore -configuration Release \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+            -derivedDataPath build
 
       - name: Create DMG
         run: |
-          cd macos/build/export
-          hdiutil create -volname "Day Before" -srcfolder DayBefore.app -ov -format UDZO ../DayBefore.dmg
+          APP=$(find macos/build -name "DayBefore.app" -maxdepth 5 | head -1)
+          hdiutil create -volname "Day Before" -srcfolder "$APP" -ov -format UDZO macos/DayBefore.dmg
 
       - name: Upload to Cloudflare R2
         env:
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-        run: |
-          pip install boto3
-          python -c "
-          import boto3
-          import os
-          s3 = boto3.client('s3',
-            endpoint_url=os.environ['R2_ENDPOINT'],
-            aws_access_key_id=os.environ['R2_ACCESS_KEY_ID'],
-            aws_secret_access_key=os.environ['R2_SECRET_ACCESS_KEY'])
-          s3.upload_file('macos/build/DayBefore.dmg', 'daybefore-downloads', 'DayBefore.dmg',
-            ExtraArgs={'ContentType': 'application/x-apple-diskimage'})
-          print('Uploaded to R2')
-          "
+          CLOUDFLARE_API_TOKEN: cfat_0Yp2K3pkUi5gTiMGmY4FtdhdGA0NHglyMGSmfLaj3a289c71
+        run: npx wrangler r2 object put daybefore-downloads/DayBefore.dmg --file=macos/DayBefore.dmg --content-type="application/x-apple-diskimage" --remote

@@ -21,35 +21,14 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.4'
 
       - name: Build APK
         working-directory: android
-        run: ./gradlew assembleRelease
-
-      - name: Sign APK
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: android/app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle assembleRelease
 
       - name: Upload to Cloudflare R2
         env:
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-        run: |
-          pip install boto3
-          python -c "
-          import boto3
-          import os
-          s3 = boto3.client('s3',
-            endpoint_url=os.environ['R2_ENDPOINT'],
-            aws_access_key_id=os.environ['R2_ACCESS_KEY_ID'],
-            aws_secret_access_key=os.environ['R2_SECRET_ACCESS_KEY'])
-          s3.upload_file('android/app/build/outputs/apk/release/app-release-signed.apk', 'daybefore-downloads', 'DayBefore.apk',
-            ExtraArgs={'ContentType': 'application/vnd.android.package-archive'})
-          print('Uploaded to R2')
-          "
+          CLOUDFLARE_API_TOKEN: cfat_0Yp2K3pkUi5gTiMGmY4FtdhdGA0NHglyMGSmfLaj3a289c71
+        run: npx wrangler r2 object put daybefore-downloads/DayBefore.apk --file=android/app/build/outputs/apk/release/app-release-unsigned.apk --content-type="application/vnd.android.package-archive" --remote
