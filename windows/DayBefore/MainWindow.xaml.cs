@@ -51,7 +51,7 @@ public partial class MainWindow : Window
     {
         RefreshAll();
         var settings = SettingsService.Load();
-        if (!string.IsNullOrEmpty(settings.Token) && !string.IsNullOrEmpty(settings.Salt) && !string.IsNullOrEmpty(settings.WrappedKeyPwd))
+        if (!string.IsNullOrEmpty(settings.Token))
         {
             try
             {
@@ -61,9 +61,22 @@ public partial class MainWindow : Window
                     SubStatusLabel.Text = "PAID — sync active";
                     SubStatusLabel.Visibility = Visibility.Visible;
                     ManageSubBtn.Visibility = Visibility.Visible;
+                    SubscribeBtn.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    SubStatusLabel.Text = "FREE — local only";
+                    SubStatusLabel.Visibility = Visibility.Visible;
+                    SubscribeBtn.Visibility = Visibility.Visible;
+                    ManageSubBtn.Visibility = Visibility.Collapsed;
                 }
             }
-            catch { }
+            catch
+            {
+                SubStatusLabel.Text = "FREE — local only";
+                SubStatusLabel.Visibility = Visibility.Visible;
+                SubscribeBtn.Visibility = Visibility.Visible;
+            }
         }
     }
 
@@ -213,34 +226,40 @@ public partial class MainWindow : Window
     private void NewCorePoint_Click(object sender, RoutedEventArgs e) { NewCoreNameBox.Text = ""; NewCoreNameBox.Visibility = Visibility.Visible; NewCoreNameBox.Focus(); }
     private void NewIssue_Click(object sender, RoutedEventArgs e) { NewIssueNameBox.Text = ""; NewIssueNameBox.Visibility = Visibility.Visible; NewIssueNameBox.Focus(); }
 
+    private bool _committingCore, _committingIssue;
+
     private void NewCoreName_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) CommitNewCorePoint(); else if (e.Key == Key.Escape) NewCoreNameBox.Visibility = Visibility.Collapsed; }
-    private void NewCoreName_LostFocus(object sender, RoutedEventArgs e) { if (!string.IsNullOrWhiteSpace(NewCoreNameBox.Text)) CommitNewCorePoint(); else NewCoreNameBox.Visibility = Visibility.Collapsed; }
+    private void NewCoreName_LostFocus(object sender, RoutedEventArgs e) { if (_committingCore) return; if (!string.IsNullOrWhiteSpace(NewCoreNameBox.Text)) CommitNewCorePoint(); else NewCoreNameBox.Visibility = Visibility.Collapsed; }
 
     private void CommitNewCorePoint()
     {
         var name = NewCoreNameBox.Text.Trim();
         if (string.IsNullOrEmpty(name)) return;
+        _committingCore = true;
         NewCoreNameBox.Visibility = Visibility.Collapsed;
         var pt = new CorePoint { Id = Guid.NewGuid().ToString(), Name = name, Content = "", CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() };
         _db.SaveCorePoint(pt);
         RefreshCoreList();
         OpenCorePoint(pt);
         CoreList.SelectedItem = ((List<CorePoint>)CoreList.ItemsSource).FirstOrDefault(p => p.Id == pt.Id);
+        _committingCore = false;
     }
 
     private void NewIssueName_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) CommitNewIssue(); else if (e.Key == Key.Escape) NewIssueNameBox.Visibility = Visibility.Collapsed; }
-    private void NewIssueName_LostFocus(object sender, RoutedEventArgs e) { if (!string.IsNullOrWhiteSpace(NewIssueNameBox.Text)) CommitNewIssue(); else NewIssueNameBox.Visibility = Visibility.Collapsed; }
+    private void NewIssueName_LostFocus(object sender, RoutedEventArgs e) { if (_committingIssue) return; if (!string.IsNullOrWhiteSpace(NewIssueNameBox.Text)) CommitNewIssue(); else NewIssueNameBox.Visibility = Visibility.Collapsed; }
 
     private void CommitNewIssue()
     {
         var name = NewIssueNameBox.Text.Trim();
         if (string.IsNullOrEmpty(name)) return;
+        _committingIssue = true;
         NewIssueNameBox.Visibility = Visibility.Collapsed;
         var issue = new Issue { Id = Guid.NewGuid().ToString(), Name = name, Content = "", CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() };
         _db.SaveIssue(issue);
         RefreshIssueList();
         OpenIssue(issue);
         IssueList.SelectedItem = ((List<Issue>)IssueList.ItemsSource).FirstOrDefault(i => i.Id == issue.Id);
+        _committingIssue = false;
     }
 
     private void JournalList_SelectionChanged(object sender, SelectionChangedEventArgs e) { if (JournalList.SelectedItem is JournalEntry entry) { CoreList.SelectedItem = null; IssueList.SelectedItem = null; OpenJournalEntry(entry); } }
@@ -370,6 +389,11 @@ public partial class MainWindow : Window
         var data = new { journalEntries = _db.GetJournalEntries(), corePoints = _db.GetCorePoints(), issues = _db.GetIssues(), issueEntries = _db.GetIssueEntries() };
         File.WriteAllText(path, JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true }));
         MessageBox.Show("Exported successfully.", "Day Before", MessageBoxButton.OK);
+    }
+
+    private void Subscribe_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo("https://daybefore.app") { UseShellExecute = true });
     }
 
     private async void ManageSubscription_Click(object sender, RoutedEventArgs e)

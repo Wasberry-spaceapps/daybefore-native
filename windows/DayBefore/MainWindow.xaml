@@ -135,6 +135,7 @@
                     <TextBlock x:Name="SubStatusLabel" Text="" Foreground="#FFFFFF" FontSize="11" Margin="0,0,0,8" Visibility="Collapsed" FontWeight="Medium"/>
                     <Button Content="take a minute" Style="{StaticResource TextBtn}" HorizontalAlignment="Left" Margin="0,0,0,8" Click="Game_Click"/>
                     <Button Content="Export" Style="{StaticResource TextBtn}" HorizontalAlignment="Left" Margin="0,0,0,8" Click="Export_Click"/>
+                    <Button x:Name="SubscribeBtn" Content="Subscribe" Style="{StaticResource TextBtn}" HorizontalAlignment="Left" Margin="0,0,0,8" Click="Subscribe_Click" Visibility="Collapsed"/>
                     <Button x:Name="ManageSubBtn" Content="Manage Subscription" Style="{StaticResource TextBtn}" HorizontalAlignment="Left" Margin="0,0,0,8" Click="ManageSubscription_Click" Visibility="Collapsed"/>
                     <Button Content="Log Out" Style="{StaticResource TextBtn}" HorizontalAlignment="Left" Click="LogOut_Click"/>
                 </StackPanel>
